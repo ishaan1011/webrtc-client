@@ -52,11 +52,13 @@
   </div>
 
   <!-- Socket.io client library -->
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script src="https://cdn.socket.io/4.6.2/socket.io.min.js"></script>
 
   <!-- Inject your Render & TURN URLs here -->
   <script>
-    window.SIGNALING_SERVER_URL = 'http://localhost:8181';
+    // window.SIGNALING_SERVER_URL = 'http://localhost:8181';
+    window.SIGNALING_SERVER_URL = 'https://webrtc-signaling-server-8t73.onrender.com';
   </script>
 
   <!-- Load your module (which itself imports socketListeners.js) -->
