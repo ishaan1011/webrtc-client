@@ -29,58 +29,63 @@ const state = {
   }
 };
 
-// DOM element references
-const elements = {
-  // Landing page elements
-  landingContainer: document.getElementById('landing-container'),
-  createRoomBtn: document.getElementById('create-room'),
-  joinRoomBtn: document.getElementById('join-room'),
-  roomIdInput: document.getElementById('room-id-input'),
-  displayNameInput: document.getElementById('display-name-input'),
-  activeRoomsList: document.getElementById('active-rooms-list'),
-  cameraPreview: document.getElementById('camera-preview'),
-  togglePreviewVideo: document.getElementById('toggle-preview-video'),
-  togglePreviewAudio: document.getElementById('toggle-preview-audio'),
-  
-  // Meeting elements
-  meetingContainer: document.getElementById('meeting-container'),
-  userNameEl: document.getElementById('user-name'),
-  meetingIdEl: document.getElementById('meeting-id'),
-  meetingTimer: document.getElementById('meeting-timer'),
-  copyInviteBtn: document.getElementById('copy-invite'),
-  
-  // Video elements
-  localVideo: document.getElementById('local-video'),
-  remoteVideo: document.getElementById('remote-video'),
-  toggleGridView: document.getElementById('toggle-grid-view'),
-  participantsGrid: document.getElementById('participants-grid'),
-  
-  // Controls
-  toggleAudio: document.getElementById('toggle-audio'),
-  toggleVideo: document.getElementById('toggle-video'),
-  shareScreen: document.getElementById('share-screen'),
-  chatBtn: document.getElementById('chat'),
-  participantsBtn: document.getElementById('participants'),
-  settingsBtn: document.getElementById('settings'),
-  callButton: document.getElementById('call'),
-  hangupButton: document.getElementById('hangup'),
-  
-  // Sidebars
-  chatSidebar: document.getElementById('chat-sidebar'),
-  chatMessages: document.getElementById('chat-messages'),
-  chatInput: document.getElementById('chat-input'),
-  sendChatBtn: document.getElementById('send-chat'),
-  closeChatBtn: document.getElementById('close-chat'),
-  participantsSidebar: document.getElementById('participants-sidebar'),
-  closeParticipantsBtn: document.getElementById('close-participants'),
-  
-  // Device settings
-  audioInputSelect: document.getElementById('audio-input-select'),
-  audioOutputSelect: document.getElementById('audio-output-select'),
-  videoInputSelect: document.getElementById('video-input-select'),
-  settingsVideoPreview: document.getElementById('settings-video-preview'),
-  applySettingsBtn: document.getElementById('apply-settings')
-};
+// Function to get DOM elements (used to ensure elements are found after DOM is fully loaded)
+function getDOMElements() {
+  return {
+    // Landing page elements
+    landingContainer: document.getElementById('landing-container'),
+    createRoomBtn: document.getElementById('create-room'),
+    joinRoomBtn: document.getElementById('join-room'),
+    roomIdInput: document.getElementById('room-id-input'),
+    displayNameInput: document.getElementById('display-name-input'),
+    activeRoomsList: document.getElementById('active-rooms-list'),
+    cameraPreview: document.getElementById('camera-preview'),
+    togglePreviewVideo: document.getElementById('toggle-preview-video'),
+    togglePreviewAudio: document.getElementById('toggle-preview-audio'),
+    
+    // Meeting elements
+    meetingContainer: document.getElementById('meeting-container'),
+    userNameEl: document.getElementById('user-name'),
+    meetingIdEl: document.getElementById('meeting-id'),
+    meetingTimer: document.getElementById('meeting-timer'),
+    copyInviteBtn: document.getElementById('copy-invite'),
+    
+    // Video elements
+    localVideo: document.getElementById('local-video'),
+    remoteVideo: document.getElementById('remote-video'),
+    toggleGridView: document.getElementById('toggle-grid-view'),
+    participantsGrid: document.getElementById('participants-grid'),
+    
+    // Controls
+    toggleAudio: document.getElementById('toggle-audio'),
+    toggleVideo: document.getElementById('toggle-video'),
+    shareScreen: document.getElementById('share-screen'),
+    chatBtn: document.getElementById('chat'),
+    participantsBtn: document.getElementById('participants'),
+    settingsBtn: document.getElementById('settings'),
+    callButton: document.getElementById('call'),
+    hangupButton: document.getElementById('hangup'),
+    
+    // Sidebars
+    chatSidebar: document.getElementById('chat-sidebar'),
+    chatMessages: document.getElementById('chat-messages'),
+    chatInput: document.getElementById('chat-input'),
+    sendChatBtn: document.getElementById('send-chat'),
+    closeChatBtn: document.getElementById('close-chat'),
+    participantsSidebar: document.getElementById('participants-sidebar'),
+    closeParticipantsBtn: document.getElementById('close-participants'),
+    
+    // Device settings
+    audioInputSelect: document.getElementById('audio-input-select'),
+    audioOutputSelect: document.getElementById('audio-output-select'),
+    videoInputSelect: document.getElementById('video-input-select'),
+    settingsVideoPreview: document.getElementById('settings-video-preview'),
+    applySettingsBtn: document.getElementById('apply-settings')
+  };
+}
+
+// Initialize elements as empty, will be properly populated during initialization
+let elements = {};
 
 // Generate a random username for initial display
 state.userName = `User-${Math.floor(Math.random() * 100000)}`;
@@ -102,15 +107,51 @@ let socket = null;
 
 // Initialize the application
 async function init() {
-  // Setup event listeners
-  setupEventListeners();
-  
-  // Load available rooms
-  fetchActiveRooms();
-  
-  // Start camera preview
-  await setupDevices();
-  startPreview();
+  console.log('Initializing application...');
+  try {
+    // Important: Get DOM elements now that the document is fully loaded
+    elements = getDOMElements();
+    console.log('DOM elements loaded:', Object.keys(elements).filter(key => elements[key] !== null).length, 'found');
+    
+    // Check specifically for buttons to debug
+    if (elements.createRoomBtn) {
+      console.log('Create room button found in DOM: ', elements.createRoomBtn);
+    } else {
+      console.error('Create room button NOT found in DOM');
+    }
+    
+    // Setup event listeners for UI elements
+    setupEventListeners();
+    
+    // Load available rooms
+    await fetchActiveRooms();
+    
+    // Start camera preview
+    await setupDevices();
+    startPreview();
+    
+    // Add direct click handler to button elements
+    // This is a failsafe in case the other listeners don't work
+    document.querySelectorAll('button').forEach(btn => {
+      const id = btn.id;
+      console.log(`Found button with ID: ${id}`);
+      if (id === 'create-room') {
+        btn.onclick = function() {
+          console.log('Create room clicked (direct handler)');
+          createRoom();
+        };
+      } else if (id === 'join-room') {
+        btn.onclick = function() {
+          console.log('Join room clicked (direct handler)');
+          joinRoom();
+        };
+      }
+    });
+    
+    console.log('Application initialized successfully');
+  } catch (error) {
+    console.error('Error initializing application:', error);
+  }
 }
 
 // Initialize the signaling connection for a specific room
@@ -392,14 +433,43 @@ async function applyDeviceSettings() {
  * UI Event Listeners
  */
 function setupEventListeners() {
+  console.log('Setting up event listeners...');
+  
+  // Debug what DOM elements we found
+  console.log('DOM elements state:', {
+    createRoomBtn: elements.createRoomBtn,
+    joinRoomBtn: elements.joinRoomBtn,
+    roomIdInput: elements.roomIdInput,
+    displayNameInput: elements.displayNameInput
+  });
+  
   // Landing page - Create room
-  elements.createRoomBtn?.addEventListener('click', () => createRoom());
+  if (elements.createRoomBtn) {
+    console.log('Adding event listener to createRoomBtn');
+    elements.createRoomBtn.addEventListener('click', function() {
+      console.log('Create room button clicked');
+      createRoom();
+    });
+  } else {
+    console.error('Create room button not found in DOM');
+  }
   
   // Landing page - Join room
-  elements.joinRoomBtn?.addEventListener('click', () => joinRoom());
-  elements.roomIdInput?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') joinRoom();
-  });
+  if (elements.joinRoomBtn) {
+    console.log('Adding event listener to joinRoomBtn');
+    elements.joinRoomBtn.addEventListener('click', function() {
+      console.log('Join room button clicked');
+      joinRoom();
+    });
+  } else {
+    console.error('Join room button not found in DOM');
+  }
+  
+  if (elements.roomIdInput) {
+    elements.roomIdInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') joinRoom();
+    });
+  }
   
   // Preview controls
   elements.togglePreviewVideo?.addEventListener('click', () => {
@@ -906,15 +976,42 @@ function cleanup() {
   console.log('📞 Call ended');
 }
 
-// Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-  const { initSocketListeners } = await import('./socketListeners.js');
-  initSocketListeners(socket, {
-    answerOffer,
-    addAnswer,
-    addNewIceCandidate
-  });
-});
+// Simple direct event listeners for the landing page buttons
+window.onload = function() {
+  console.log('Window loaded - setting up essential buttons');
+  
+  // Direct handlers for the most important buttons
+  const createRoomBtn = document.getElementById('create-room');
+  const joinRoomBtn = document.getElementById('join-room');
+  const roomIdInput = document.getElementById('room-id-input');
+  
+  if (createRoomBtn) {
+    console.log('Found create room button, adding direct click handler');
+    createRoomBtn.onclick = function() {
+      console.log('Create room clicked');
+      createRoom();
+    };
+  }
+  
+  if (joinRoomBtn) {
+    console.log('Found join room button, adding direct click handler');
+    joinRoomBtn.onclick = function() {
+      console.log('Join room clicked');
+      joinRoom();
+    };
+  }
+  
+  if (roomIdInput) {
+    roomIdInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        joinRoom();
+      }
+    });
+  }
+  
+  // Start normal initialization
+  init();
+};
 
 // Export functions for possible external use
 export { 
