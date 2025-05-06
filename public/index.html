@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Video Meeting</title>
+  <title>ConnectMeet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
   <link
@@ -18,15 +18,83 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="zoom-container">
+  <!-- Landing page container (shown by default) -->
+  <div id="landing-container" class="landing-container">
+    <div class="landing-content">
+      <div class="landing-header">
+        <h1><i class="fas fa-video"></i> ConnectMeet</h1>
+        <p class="tagline">Simple, secure video conferencing</p>
+      </div>
+      
+      <div class="landing-options">
+        <div class="option-card">
+          <h3>Start a new meeting</h3>
+          <p>Create a new room and invite others</p>
+          <button id="create-room" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle"></i> New Meeting
+          </button>
+        </div>
+        
+        <div class="option-card">
+          <h3>Join a meeting</h3>
+          <p>Enter a room code to join an existing meeting</p>
+          <div class="input-group mb-3">
+            <input type="text" id="room-id-input" class="form-control" placeholder="Room ID" aria-label="Room ID">
+            <button id="join-room" class="btn btn-success">
+              <i class="fas fa-sign-in-alt"></i> Join
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="active-rooms-container" class="active-rooms">
+        <h4>Active Rooms</h4>
+        <div id="active-rooms-list" class="active-rooms-list">
+          <!-- Active rooms will be populated here -->
+          <div class="room-loading">Loading available rooms...</div>
+        </div>
+      </div>
+      
+      <div class="user-settings mb-3">
+        <h4>Your Settings</h4>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Display Name</span>
+          <input type="text" id="display-name-input" class="form-control" placeholder="Your Name">
+        </div>
+        <div class="device-preview">
+          <div class="camera-preview">
+            <video id="camera-preview" autoplay muted playsinline></video>
+            <div class="preview-controls">
+              <button id="toggle-preview-video" class="btn btn-sm btn-light">
+                <i class="fas fa-video"></i>
+              </button>
+              <button id="toggle-preview-audio" class="btn btn-sm btn-light">
+                <i class="fas fa-microphone"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main meeting container (hidden by default) -->
+  <div id="meeting-container" class="zoom-container d-none">
     <!-- Meeting header with meeting info -->
     <div class="meeting-header">
       <div class="meeting-info">
         <i class="fa-solid fa-shield-halved"></i>
-        <span id="meeting-name">Meeting ID: <span id="meeting-id">...</span></span>
+        <span id="meeting-name">Room: <span id="meeting-id">...</span></span>
+        <button id="copy-invite" class="btn btn-sm btn-outline-light ms-2" title="Copy invite link">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <div class="meeting-duration">
+        <span id="meeting-timer">00:00:00</span>
       </div>
       <div class="user-info">
         <span id="user-name">...</span>
+        <span class="badge bg-success ms-1">Host</span>
       </div>
     </div>
 
@@ -37,22 +105,51 @@
 
       <!-- Main video area with speaker view / gallery view -->
       <div id="video-container" class="video-container">
-        <div id="main-video-wrapper" class="main-video-wrapper">
-          <video id="remote-video" class="main-video" autoplay playsinline></video>
-          <div class="video-overlay">
-            <div class="participant-name" id="remote-participant-name">Waiting for participants...</div>
+        <div id="participants-grid" class="participants-grid">
+          <!-- Grid will be dynamically populated based on participant count -->
+          
+          <!-- Self view (always present) -->
+          <div id="self-video-wrapper" class="video-wrapper">
+            <video id="local-video" autoplay muted playsinline></video>
+            <div class="video-overlay">
+              <div class="participant-name">You</div>
+              <div class="connection-status">
+                <i class="fas fa-signal"></i>
+              </div>
+            </div>
+            <div class="video-badges">
+              <span class="audio-badge muted"><i class="fas fa-microphone-slash"></i></span>
+            </div>
+          </div>
+          
+          <!-- Remote view -->
+          <div id="remote-video-wrapper" class="video-wrapper">
+            <video id="remote-video" autoplay playsinline></video>
+            <div class="video-overlay">
+              <div class="participant-name" id="remote-participant-name">Waiting for participants...</div>
+              <div class="connection-status">
+                <i class="fas fa-signal"></i>
+              </div>
+            </div>
+            <div class="video-badges">
+              <span class="audio-badge"><i class="fas fa-microphone"></i></span>
+            </div>
+          </div>
+          
+          <!-- Placeholder for more participants -->
+          <div class="empty-participant-slot">
+            <div class="empty-slot-content">
+              <i class="fas fa-user-plus"></i>
+              <p>Waiting for others to join...</p>
+            </div>
           </div>
         </div>
-
-        <!-- Self view (PIP) -->
-        <div id="self-video-wrapper" class="self-video-wrapper">
-          <video id="local-video" class="self-video" autoplay muted playsinline></video>
-          <div class="video-overlay">
-            <div class="participant-name">You</div>
-          </div>
-          <div class="self-video-controls">
-            <button id="toggle-pip" class="pip-control"><i class="fa-solid fa-expand"></i></button>
-          </div>
+        
+        <!-- Speaker view toggle -->
+        <div class="view-controls">
+          <button id="toggle-grid-view" class="view-toggle">
+            <i class="fas fa-th-large"></i> Gallery View
+          </button>
         </div>
       </div>
 
@@ -60,37 +157,43 @@
       <div class="meeting-controls">
         <div class="control-button-group">
           <button id="toggle-audio" class="control-button">
-            <i class="fa-solid fa-microphone"></i>
+            <i class="fas fa-microphone"></i>
             <span class="control-label">Mute</span>
           </button>
           <button id="toggle-video" class="control-button">
-            <i class="fa-solid fa-video"></i>
+            <i class="fas fa-video"></i>
             <span class="control-label">Stop Video</span>
           </button>
         </div>
 
         <div class="control-button-group">
           <button id="share-screen" class="control-button">
-            <i class="fa-solid fa-desktop"></i>
+            <i class="fas fa-desktop"></i>
             <span class="control-label">Share Screen</span>
           </button>
           <button id="chat" class="control-button">
-            <i class="fa-solid fa-comment"></i>
+            <i class="fas fa-comment"></i>
             <span class="control-label">Chat</span>
+            <span id="unread-messages" class="notification-badge d-none">0</span>
           </button>
           <button id="participants" class="control-button">
-            <i class="fa-solid fa-users"></i>
+            <i class="fas fa-users"></i>
             <span class="control-label">Participants</span>
+            <span id="participant-count" class="count-badge">1</span>
+          </button>
+          <button id="settings" class="control-button">
+            <i class="fas fa-cog"></i>
+            <span class="control-label">Settings</span>
           </button>
         </div>
 
         <div class="control-button-group">
           <button id="call" class="control-button join-button">
-            <i class="fa-solid fa-phone"></i>
+            <i class="fas fa-phone"></i>
             <span class="control-label">Join</span>
           </button>
           <button id="hangup" class="control-button leave-button" disabled>
-            <i class="fa-solid fa-phone-slash"></i>
+            <i class="fas fa-phone-slash"></i>
             <span class="control-label">Leave</span>
           </button>
         </div>
@@ -139,6 +242,51 @@
     </div>
   </div>
 
+  </div>
+  
+  <!-- Settings modal -->
+  <div class="modal fade" id="settings-modal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsModalLabel">Meeting Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Audio device selection -->
+          <div class="mb-3">
+            <label for="audio-input-select" class="form-label">Microphone</label>
+            <select id="audio-input-select" class="form-select"></select>
+          </div>
+          
+          <!-- Video device selection -->
+          <div class="mb-3">
+            <label for="video-input-select" class="form-label">Camera</label>
+            <select id="video-input-select" class="form-select"></select>
+          </div>
+          
+          <!-- Audio output selection (if supported) -->
+          <div class="mb-3" id="audio-output-container">
+            <label for="audio-output-select" class="form-label">Audio Output</label>
+            <select id="audio-output-select" class="form-select"></select>
+          </div>
+          
+          <!-- Video preview -->
+          <div class="settings-preview">
+            <video id="settings-video-preview" autoplay muted playsinline></video>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="apply-settings" class="btn btn-primary">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <!-- Socket.io client library -->
   <script src="https://cdn.socket.io/4.6.2/socket.io.min.js"></script>
 
@@ -146,8 +294,7 @@
   <script>
     // window.SIGNALING_SERVER_URL = 'http://localhost:8181';
     window.SIGNALING_SERVER_URL = 'https://webrtc-signaling-server-8t73.onrender.com';
-    window.MEETING_ID = 'meeting-' + Math.floor(Math.random() * 1000000);
-    document.getElementById('meeting-id').textContent = window.MEETING_ID;
+    window.MEETING_ID = null; // Will be set upon room creation/joining
   </script>
 
   <!-- Load your module (which itself imports socketListeners.js) -->
