@@ -53,4 +53,15 @@ export function initSocketListeners(
     console.log('🌐 receivedIceCandidateFromServer', candidate);
     addNewIceCandidate(candidate);
   });
+
+  socket.on('hangup', () => {
+    console.log('🔴 Remote peer hung up');
+    cleanup();
+    // Re-enable the Call button in case it was disabled
+    const callBtn = document.getElementById('call');
+    const hangupBtn = document.getElementById('hangup');
+    if (callBtn) callBtn.disabled = false;
+    if (hangupBtn) hangupBtn.disabled = true;
+  });
+  
 }

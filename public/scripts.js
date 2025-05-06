@@ -80,6 +80,7 @@ if (callButton) {
 }
 if (hangupButton) {
   hangupButton.addEventListener('click', () => {
+    socket.emit('hangup');
     cleanup();
     if (callButton) callButton.disabled = false;
     if (hangupButton) hangupButton.disabled = true;
