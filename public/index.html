@@ -3,62 +3,151 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>WebRTC Call App</title>
+  <title>Video Meeting</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap (optional) -->
+  <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
-    integrity="sha384-…"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
     crossorigin="anonymous"
   >
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom styles -->
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="container py-4">
-
-    <!-- User and Controls -->
-    <div class="d-flex align-items-center mb-3">
-      <h5 class="me-3">Your name: <span id="user-name">…</span></h5>
-      <button id="call" class="btn btn-primary me-2">Call!</button>
-      <button id="hangup" class="btn btn-secondary" disabled>Hangup</button>
+  <div class="zoom-container">
+    <!-- Meeting header with meeting info -->
+    <div class="meeting-header">
+      <div class="meeting-info">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span id="meeting-name">Meeting ID: <span id="meeting-id">...</span></span>
+      </div>
+      <div class="user-info">
+        <span id="user-name">...</span>
+      </div>
     </div>
 
-    <!-- Incoming offers will render here -->
-    <div id="answer" class="mb-3"></div>
+    <!-- Main content area -->
+    <div class="meeting-content">
+      <!-- Incoming call offers will render here -->
+      <div id="answer" class="incoming-calls"></div>
 
-    <!-- Video layout -->
-    <div class="row g-2">
-      <!-- Local -->
-      <div class="col-md-6">
-        <video
-          id="local-video"
-          class="w-100 rounded"
-          autoplay
-          muted
-          playsinline
-        ></video>
+      <!-- Main video area with speaker view / gallery view -->
+      <div id="video-container" class="video-container">
+        <div id="main-video-wrapper" class="main-video-wrapper">
+          <video id="remote-video" class="main-video" autoplay playsinline></video>
+          <div class="video-overlay">
+            <div class="participant-name" id="remote-participant-name">Waiting for participants...</div>
+          </div>
+        </div>
+
+        <!-- Self view (PIP) -->
+        <div id="self-video-wrapper" class="self-video-wrapper">
+          <video id="local-video" class="self-video" autoplay muted playsinline></video>
+          <div class="video-overlay">
+            <div class="participant-name">You</div>
+          </div>
+          <div class="self-video-controls">
+            <button id="toggle-pip" class="pip-control"><i class="fa-solid fa-expand"></i></button>
+          </div>
+        </div>
       </div>
-      <!-- Remote -->
-      <div class="col-md-6">
-        <video
-          id="remote-video"
-          class="w-100 rounded"
-          autoplay
-          playsinline
-        ></video>
+
+      <!-- Meeting controls toolbar -->
+      <div class="meeting-controls">
+        <div class="control-button-group">
+          <button id="toggle-audio" class="control-button">
+            <i class="fa-solid fa-microphone"></i>
+            <span class="control-label">Mute</span>
+          </button>
+          <button id="toggle-video" class="control-button">
+            <i class="fa-solid fa-video"></i>
+            <span class="control-label">Stop Video</span>
+          </button>
+        </div>
+
+        <div class="control-button-group">
+          <button id="share-screen" class="control-button">
+            <i class="fa-solid fa-desktop"></i>
+            <span class="control-label">Share Screen</span>
+          </button>
+          <button id="chat" class="control-button">
+            <i class="fa-solid fa-comment"></i>
+            <span class="control-label">Chat</span>
+          </button>
+          <button id="participants" class="control-button">
+            <i class="fa-solid fa-users"></i>
+            <span class="control-label">Participants</span>
+          </button>
+        </div>
+
+        <div class="control-button-group">
+          <button id="call" class="control-button join-button">
+            <i class="fa-solid fa-phone"></i>
+            <span class="control-label">Join</span>
+          </button>
+          <button id="hangup" class="control-button leave-button" disabled>
+            <i class="fa-solid fa-phone-slash"></i>
+            <span class="control-label">Leave</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat sidebar (hidden by default) -->
+    <div id="chat-sidebar" class="sidebar chat-sidebar">
+      <div class="sidebar-header">
+        <h5>In-Meeting Chat</h5>
+        <button id="close-chat" class="close-sidebar"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="Type message here..." class="chat-input">
+        <button id="send-chat" class="send-chat-btn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+
+    <!-- Participants sidebar (hidden by default) -->
+    <div id="participants-sidebar" class="sidebar participants-sidebar">
+      <div class="sidebar-header">
+        <h5>Participants (2)</h5>
+        <button id="close-participants" class="close-sidebar"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="participants-list">
+        <div class="participant-item">
+          <div class="participant-info">
+            <span class="participant-name">You (Host)</span>
+          </div>
+          <div class="participant-controls">
+            <i class="fa-solid fa-microphone"></i>
+            <i class="fa-solid fa-video"></i>
+          </div>
+        </div>
+        <div id="remote-participant" class="participant-item">
+          <div class="participant-info">
+            <span id="remote-user-name" class="participant-name">Waiting...</span>
+          </div>
+          <div class="participant-controls">
+            <i class="fa-solid fa-microphone"></i>
+            <i class="fa-solid fa-video"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Socket.io client library -->
-  <!-- <script src="/socket.io/socket.io.js"></script> -->
   <script src="https://cdn.socket.io/4.6.2/socket.io.min.js"></script>
 
-  <!-- Inject your Render & TURN URLs here -->
+  <!-- Inject your signaling server URL here -->
   <script>
     // window.SIGNALING_SERVER_URL = 'http://localhost:8181';
     window.SIGNALING_SERVER_URL = 'https://webrtc-signaling-server-8t73.onrender.com';
+    window.MEETING_ID = 'meeting-' + Math.floor(Math.random() * 1000000);
+    document.getElementById('meeting-id').textContent = window.MEETING_ID;
   </script>
 
   <!-- Load your module (which itself imports socketListeners.js) -->
