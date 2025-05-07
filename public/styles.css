@@ -751,3 +751,91 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+/* ======================= */
+/* SLEEK “GLASS” MEETING UI */
+/* ======================= */
+
+/* overall meeting bg */
+.zoom-container {
+  background: #121212;
+}
+
+/* translucent header/footer */
+.meeting-header,
+.meeting-controls {
+  background: rgba(24, 24, 24, 0.6);
+  backdrop-filter: blur(8px);
+  border: none;
+  padding: 8px 16px;
+}
+
+/* shrink header items */
+.meeting-header .meeting-info,
+.meeting-header .user-info {
+  opacity: 0.75;
+  font-size: 13px;
+}
+.meeting-header .meeting-info:hover,
+.meeting-header .user-info:hover {
+  opacity: 1;
+}
+
+/* hide the timer label unless hovered */
+.meeting-duration {
+  opacity: 0.5;
+  transition: opacity .3s;
+}
+.meeting-duration:hover {
+  opacity: 1;
+}
+
+/* remove labels under icons */
+.control-label {
+  display: none;
+}
+
+/* control buttons pill style */
+.control-button {
+  background: rgba(40, 40, 40, 0.5);
+  padding: 10px;
+  margin: 0 4px;
+  border-radius: 999px;
+}
+.control-button:hover {
+  background: rgba(70, 70, 70, 0.7);
+}
+.control-button i {
+  font-size: 18px;
+}
+
+/* full-bleed video area */
+.video-container {
+  padding: 0;
+}
+
+/* grid: center single, tighter gap */
+.participants-grid {
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* video cards: remove heavy shadows */
+.video-wrapper {
+  border-radius: 8px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+/* placeholder slot gone */
+.empty-participant-slot {
+  display: none;
+}
+
+/* gallery toggle: tone down */
+.view-toggle {
+  background: rgba(0, 0, 0, 0.4) !important;
+  font-size: 11px;
+  padding: 6px 10px;
+}
