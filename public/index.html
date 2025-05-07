@@ -3,44 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>ConnectMeet</title>
+  <title>Comm360</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-    crossorigin="anonymous"
-  >
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4CAF50',
+            secondary: '#2196F3',
+            accent: '#FFB300',
+            background: '#121212',
+            surface: '#1E1E1E',
+            text: '#E0E0E0',
+            muted: '#757575',
+          },
+          spacing: { xs: '0.5rem', sm: '1rem', md: '1.5rem', lg: '2rem' },
+          borderRadius: { DEFAULT: '0.75rem' }
+        }
+      }
+    }
+  </script>
+
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Custom styles -->
-  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <!-- Landing page container (shown by default) -->
-  <div id="landing-container" class="landing-container">
-    <div class="landing-content">
-      <div class="landing-header">
-        <h1><i class="fas fa-video"></i> ConnectMeet</h1>
-        <p class="tagline">Simple, secure video conferencing</p>
-      </div>
+  <section id="landing-container" class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-surface to-background p-lg">
+    <div class="bg-surface bg-opacity-80 rounded-lg shadow-lg p-md max-w-md w-full space-y-md">
+      <header class="text-center space-y-xs">
+        <h1 class="text-4xl font-semibold text-text">
+          <i class="fas fa-video text-primary mr-xs"></i>
+          Comm360
+        </h1>
+        <p class="text-muted text-sm">Simple, secure video conferencing</p>
+      </header>
       
-      <div class="landing-options">
-        <div class="option-card">
+      <div class="flex flex-col md:flex-row gap-lg">
+        <div class="bg-surface bg-opacity-80 rounded-lg p-md text-center transition-transform transform hover:-translate-y-1">
           <h3>Start a new meeting</h3>
           <p>Create a new room and invite others</p>
-          <button id="create-room" class="btn btn-primary btn-lg">
+          <button id="create-room" class="bg-primary text-white py-sm px-md rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary">
             <i class="fas fa-plus-circle"></i> New Meeting
           </button>
         </div>
         
-        <div class="option-card">
+        <div class="bg-surface bg-opacity-80 rounded-lg p-md text-center transition-transform transform hover:-translate-y-1">
           <h3>Join a meeting</h3>
           <p>Enter a room code to join an existing meeting</p>
-          <div class="input-group mb-3">
-            <input type="text" id="room-id-input" class="form-control" placeholder="Room ID" aria-label="Room ID">
-            <button id="join-room" class="btn btn-success">
+          <div class="flex gap-xs mb-md">
+            <input
+              type="text"
+              id="room-id-input"
+              class="flex-1 bg-surface bg-opacity-80 text-text placeholder:text-muted p-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Room ID"
+              aria-label="Room ID"
+            >
+            <button
+              id="join-room"
+              class="bg-secondary text-white py-sm px-md rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
               <i class="fas fa-sign-in-alt"></i> Join
             </button>
           </div>
@@ -55,48 +81,70 @@
         </div>
       </div>
       
-      <div class="user-settings mb-3">
+      <section class="bg-surface bg-opacity-80 rounded-lg p-md mt-lg space-y-md">
         <h4>Your Settings</h4>
-        <div class="input-group mb-3">
-          <span class="input-group-text">Display Name</span>
-          <input type="text" id="display-name-input" class="form-control" placeholder="Your Name">
+        <div class="flex gap-xs mb-md">
+          <span class="bg-surface text-muted px-sm py-xs rounded-l-lg">Display Name</span>
+          <input
+            type="text"
+            id="display-name-input"
+            class="flex-1 bg-surface bg-opacity-80 text-text placeholder:text-muted p-sm rounded-r-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Your Name"
+          >
         </div>
         <div class="device-preview">
           <div class="camera-preview">
             <video id="camera-preview" autoplay muted playsinline></video>
             <div class="preview-controls">
-              <button id="toggle-preview-video" class="btn btn-sm btn-light">
-                <i class="fas fa-video"></i>
+              <button
+                id="toggle-preview-video"
+                class="bg-surface bg-opacity-70 p-xs rounded-full hover:bg-opacity-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Toggle preview video"
+              >
+                <i class="fas fa-video text-text"></i>
               </button>
-              <button id="toggle-preview-audio" class="btn btn-sm btn-light">
-                <i class="fas fa-microphone"></i>
+              <button
+                id="toggle-preview-audio"
+                class="bg-surface bg-opacity-70 p-xs rounded-full hover:bg-opacity-100 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Toggle preview audio"
+              >
+                <i class="fas fa-microphone text-text"></i>
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div>
+  </section>
   
   <!-- Main meeting container (hidden by default) -->
-  <div id="meeting-container" class="zoom-container d-none">
+  <section
+    id="meeting-container"
+    class="hidden flex flex-col h-screen bg-background"
+    aria-hidden="true"
+  >
     <!-- Meeting header with meeting info -->
-    <div class="meeting-header">
-      <div class="meeting-info">
-        <i class="fa-solid fa-shield-halved"></i>
+    <header class="flex items-center justify-between p-md bg-surface border-b border-surface">
+      <div class="flex items-center space-x-xs text-text">
+        <i class="fa-solid fa-shield-halved text-primary"></i>
         <span id="meeting-name">Room: <span id="meeting-id">...</span></span>
-        <button id="copy-invite" class="btn btn-sm btn-outline-light ms-2" title="Copy invite link">
+        <button
+          id="copy-invite"
+          class="ml-xs p-xs rounded focus:outline-none focus:ring-2 focus:ring-primary border border-text text-text"
+          title="Copy invite link"
+          aria-label="Copy invite link"
+        >
           <i class="fas fa-copy"></i>
         </button>
       </div>
-      <div class="meeting-duration">
+      <div class="meeting-duration text-sm font-mono text-text bg-surface bg-opacity-20 px-xs py-xs rounded">
         <span id="meeting-timer">00:00:00</span>
       </div>
-      <div class="user-info">
+      <div class="flex items-center space-x-xs text-text">
         <span id="user-name">...</span>
-        <span class="badge bg-success ms-1">Host</span>
+        <span class="bg-primary text-white px-xs py-0.5 rounded-full text-xs">Host</span>
       </div>
-    </div>
+    </header>
 
     <!-- Main content area -->
     <div class="meeting-content">
@@ -104,40 +152,44 @@
       <div id="answer" class="incoming-calls"></div>
 
       <!-- Main video area with speaker view / gallery view -->
-      <div id="video-container" class="video-container">
-        <div id="participants-grid" class="participants-grid">
+      <div id="video-container" class="flex-1 p-md flex items-center justify-center bg-background">
+        <div id="participants-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md w-full h-full">
           <!-- Grid will be dynamically populated based on participant count -->
           
           <!-- Self view (always present) -->
-          <div id="self-video-wrapper" class="video-wrapper">
+          <div id="self-video-wrapper" class="relative rounded-lg overflow-hidden bg-surface shadow-lg">
             <video id="local-video" autoplay muted playsinline></video>
-            <div class="video-overlay">
+            <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 flex items-center justify-between px-xs py-xs">
               <div class="participant-name">You</div>
               <div class="connection-status">
                 <i class="fas fa-signal"></i>
               </div>
             </div>
-            <div class="video-badges">
-              <span class="audio-badge muted"><i class="fas fa-microphone-slash"></i></span>
+            <div class="absolute top-xs left-xs flex space-x-xs">
+              <span class="bg-black bg-opacity-50 text-primary p-xs rounded-full">
+                <i class="fas fa-microphone-slash"></i>
+              </span>
             </div>
           </div>
           
           <!-- Remote view -->
-          <div id="remote-video-wrapper" class="video-wrapper">
+          <div id="remote-video-wrapper" class="relative rounded-lg overflow-hidden bg-surface shadow-lg">
             <video id="remote-video" autoplay playsinline></video>
-            <div class="video-overlay">
+            <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 flex items-center justify-between px-xs py-xs">
               <div class="participant-name" id="remote-participant-name">Waiting for participants...</div>
               <div class="connection-status">
                 <i class="fas fa-signal"></i>
               </div>
             </div>
-            <div class="video-badges">
-              <span class="audio-badge"><i class="fas fa-microphone"></i></span>
+            <div class="absolute top-xs left-xs flex space-x-xs">
+              <span class="bg-black bg-opacity-50 text-secondary p-xs rounded-full">
+                <i class="fas fa-microphone"></i>
+              </span>
             </div>
           </div>
           
           <!-- Placeholder for more participants -->
-          <div class="empty-participant-slot">
+          <div class="flex items-center justify-center bg-surface bg-opacity-50 rounded-lg border-2 border-dashed border-surface h-full">
             <div class="empty-slot-content">
               <i class="fas fa-user-plus"></i>
               <p>Waiting for others to join...</p>
@@ -154,8 +206,9 @@
       </div>
 
       <!-- Meeting controls toolbar -->
-      <div class="meeting-controls">
-        <div class="control-button-group">
+      <div class="flex justify-between items-center p-md bg-surface border-t border-surface">
+         <!-- Left controls -->
+        <div class="flex space-x-sm">
           <button id="toggle-audio" class="control-button">
             <i class="fas fa-microphone"></i>
             <span class="control-label">Mute</span>
@@ -166,7 +219,8 @@
           </button>
         </div>
 
-        <div class="control-button-group">
+        <!-- Middle controls -->
+        <div class="flex space-x-sm">
           <button id="share-screen" class="control-button">
             <i class="fas fa-desktop"></i>
             <span class="control-label">Share Screen</span>
@@ -187,7 +241,8 @@
           </button>
         </div>
 
-        <div class="control-button-group">
+        <!-- Right controls -->
+        <div class="flex space-x-sm">
           <button id="call" class="control-button join-button">
             <i class="fas fa-phone"></i>
             <span class="control-label">Join</span>
@@ -201,7 +256,11 @@
     </div>
 
     <!-- Chat sidebar (hidden by default) -->
-    <div id="chat-sidebar" class="sidebar chat-sidebar">
+    <aside
+      id="chat-sidebar"
+      class="fixed top-0 right-0 h-full w-80 bg-surface shadow-xl transform translate-x-full transition-transform duration-300"
+      aria-hidden="true"
+    >
       <div class="sidebar-header">
         <h5>In-Meeting Chat</h5>
         <button id="close-chat" class="close-sidebar"><i class="fa-solid fa-times"></i></button>
@@ -211,10 +270,14 @@
         <input type="text" id="chat-input" placeholder="Type message here..." class="chat-input">
         <button id="send-chat" class="send-chat-btn"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
-    </div>
+    </aside>
 
     <!-- Participants sidebar (hidden by default) -->
-    <div id="participants-sidebar" class="sidebar participants-sidebar">
+    <aside
+      id="participants-sidebar"
+      class="fixed top-0 right-0 h-full w-80 bg-surface shadow-xl transform translate-x-full transition-transform duration-300"
+      aria-hidden="true"
+    >
       <div class="sidebar-header">
         <h5>Participants (2)</h5>
         <button id="close-participants" class="close-sidebar"><i class="fa-solid fa-times"></i></button>
@@ -239,53 +302,81 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  </div>
+    </aside>
+  </section>
   
-  <!-- Settings modal -->
-  <div class="modal fade" id="settings-modal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="settingsModalLabel">Meeting Settings</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Settings modal (Tailwind) -->
+  <div
+    id="settings-modal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden"
+    role="dialog" aria-modal="true"
+    aria-hidden="true"
+  >
+    <div class="bg-surface rounded-lg shadow-xl w-11/12 max-w-md overflow-hidden">
+      <!-- Header -->
+      <header class="flex justify-between items-center p-md border-b border-surface">
+        <h2 id="settingsModalLabel" class="text-lg font-medium text-text">Meeting Settings</h2>
+        <button
+          id="close-settings"
+          class="text-text hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary p-xs rounded"
+          aria-label="Close settings"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <!-- Body -->
+      <div class="p-md space-y-md">
+        <div>
+          <label for="audio-input-select" class="block text-text mb-xs">Microphone</label>
+          <select
+            id="audio-input-select"
+            class="w-full bg-surface bg-opacity-80 text-text p-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          ></select>
         </div>
-        <div class="modal-body">
-          <!-- Audio device selection -->
-          <div class="mb-3">
-            <label for="audio-input-select" class="form-label">Microphone</label>
-            <select id="audio-input-select" class="form-select"></select>
-          </div>
-          
-          <!-- Video device selection -->
-          <div class="mb-3">
-            <label for="video-input-select" class="form-label">Camera</label>
-            <select id="video-input-select" class="form-select"></select>
-          </div>
-          
-          <!-- Audio output selection (if supported) -->
-          <div class="mb-3" id="audio-output-container">
-            <label for="audio-output-select" class="form-label">Audio Output</label>
-            <select id="audio-output-select" class="form-select"></select>
-          </div>
-          
-          <!-- Video preview -->
-          <div class="settings-preview">
-            <video id="settings-video-preview" autoplay muted playsinline></video>
-          </div>
+        <div>
+          <label for="video-input-select" class="block text-text mb-xs">Camera</label>
+          <select
+            id="video-input-select"
+            class="w-full bg-surface bg-opacity-80 text-text p-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          ></select>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" id="apply-settings" class="btn btn-primary">Apply</button>
+        <div id="audio-output-container">
+          <label for="audio-output-select" class="block text-text mb-xs">Audio Output</label>
+          <select
+            id="audio-output-select"
+            class="w-full bg-surface bg-opacity-80 text-text p-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          ></select>
+        </div>
+        <div>
+          <label class="block text-text mb-xs">Preview</label>
+          <video
+            id="settings-video-preview"
+            class="w-full rounded-lg bg-black"
+            autoplay muted playsinline
+          ></video>
         </div>
       </div>
+
+      <!-- Footer -->
+      <footer class="flex justify-end space-x-sm p-md border-t border-surface">
+        <button
+          id="cancel-settings"
+          class="px-md py-sm rounded-lg bg-surface hover:bg-surface/80 focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          Close
+        </button>
+        <button
+          id="apply-settings"
+          class="px-md py-sm rounded-lg bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          Apply
+        </button>
+      </footer>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Removed Bootstrap JS (modal replaced by Tailwind) -->
   
   <!-- Socket.io client library -->
   <script src="https://cdn.socket.io/4.6.2/socket.io.min.js"></script>
