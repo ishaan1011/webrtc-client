@@ -887,13 +887,21 @@ body {
 .bottom-section {
   display: flex;
   gap: 20px;
+  align-items: stretch;
   margin-top: 30px; /* give it some breathing room under the top cards */
 }
 
 /* each pane takes half the width on desktop */
-.bottom-section .active-rooms,
-.bottom-section .user-settings {
+.bottom-section > .active-rooms,
+.bottom-section > .user-settings {
   flex: 1;
+  display: flex;           
+  flex-direction: column;
+}
+
+.active-rooms-list {
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* stack on mobile */
