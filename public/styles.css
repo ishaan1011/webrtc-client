@@ -885,10 +885,10 @@ body {
 
 /* make active‐rooms + your-settings sit side-by-side */
 .bottom-section {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
-  align-items: stretch;
-  margin-top: 30px; /* give it some breathing room under the top cards */
+  margin-top: 30px;
 }
 
 /* each pane takes half the width on desktop */
@@ -907,7 +907,7 @@ body {
 /* stack on mobile */
 @media (max-width: 768px) {
   .bottom-section {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 
