@@ -563,6 +563,8 @@ function setupEventListeners() {
     cleanup();
     if (elements.callButton) elements.callButton.disabled = false;
     if (elements.hangupButton) elements.hangupButton.disabled = true;
+
+    window.location.href = window.location.origin;
   });
   
   // Check URL for room parameter
@@ -671,6 +673,8 @@ function setupSocketListeners() {
     if (elements.callButton) elements.callButton.disabled = false;
     if (elements.hangupButton) elements.hangupButton.disabled = true;
     showMessage(`${userName} has left the call`, 'system');
+
+    window.location.href = window.location.origin;
   });
 }
 
