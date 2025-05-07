@@ -954,3 +954,12 @@ body {
   /* was margin-top: ~1rem/20px; let’s make it a bit bigger */
   margin-top: 2.5rem;
 }
+
+/* ===================================================== */
+/* Make both the Join-Room and Display-Name inputs match */
+/* ===================================================== */
+.landing-options .input-group {
+  max-width: 320px;   /* same as your camera preview width */
+  width: 100%;
+  margin: 0 auto 1rem; /* center and add a little bottom gap */
+}
