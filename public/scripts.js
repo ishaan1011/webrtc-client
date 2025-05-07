@@ -718,7 +718,7 @@ function showIncomingCallUI(offerObj) {
   answerDiv.innerHTML = `
     <div class="incoming-call-modal">
       <p class="incoming-call-text">
-        User <strong>${offerObj.offererUserName}</strong> is requesting to join the call
+        <strong>${offerObj.offererUserName}</strong> is requesting to join the call
       </p>
       <div class="incoming-call-buttons">
         <button id="accept-call-btn" class="btn btn-success">Accept</button>

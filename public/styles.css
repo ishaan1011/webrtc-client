@@ -739,8 +739,13 @@ body {
 .incoming-call-buttons {
   display: flex;
   justify-content: center;
+  gap: 0.5rem;
 }
 
 .incoming-call-buttons .btn {
-  flex: 1;
+  flex: none;
+  min-width: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
