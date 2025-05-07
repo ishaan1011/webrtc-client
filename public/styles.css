@@ -38,7 +38,7 @@ body {
 
 .landing-content {
   width: 100%;
-  max-width: 1000px;
+  max-width: none;
   background-color: rgba(30, 30, 30, 0.8);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
@@ -80,7 +80,7 @@ body {
 
 .option-card {
   flex: 1;
-  background-color: rgba(40, 40, 40, 0.8);
+  background-color: rgba(60, 60, 60, 0.85);
   border-radius: 8px;
   padding: 20px;
   text-align: center;
