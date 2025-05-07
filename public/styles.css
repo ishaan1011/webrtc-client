@@ -1138,3 +1138,15 @@ body.light-mode #theme-toggle {
   background: #fff;
   color: #1a1a1a; /* your dark text */
 }
+
+/*=========================================
+  Make the display-name input legible in dark
+==========================================*/
+
+/* when NOT in light mode (i.e. dark), force a white bg + black text */
+body:not(.light-mode) .input-group .form-control,
+body:not(.light-mode) .input-group .input-group-text {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #ccc !important;
+}
