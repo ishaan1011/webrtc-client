@@ -1032,3 +1032,88 @@ body.light-mode input {
   align-items: center;
   justify-content: center;
 }
+
+/* ========================== */
+/*   LIGHT / DARK THEME VARS  */
+/* ========================== */
+:root {
+  --bg:            #1a1a1a;
+  --card-bg:       rgba(30, 30, 30, 0.8);
+  --text:          #fff;
+  --subtext:       #aaa;
+  --accent:        #4caf50;
+  --btn-primary:   #2ba133;
+  --btn-primary-h: #259c2f;
+}
+
+/* Light mode overrides */
+body.light-mode {
+  --bg:            #fff;
+  --card-bg:       #f7f7f7;
+  --text:          #222;
+  --subtext:       #555;
+  --accent:        #d32f2f;
+  --btn-primary:   #e02f2f;
+  --btn-primary-h: #c12727;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Landing & panels */
+.landing-container,
+.landing-content,
+.option-card {
+  background-color: var(--card-bg) !important;
+}
+
+/* Headings & paragraphs */
+h1, h3, .tagline, p {
+  color: var(--text) !important;
+}
+.tagline, p, .subtext {
+  color: var(--subtext) !important;
+}
+
+/* Buttons */
+.btn-success,
+.join-button,
+.join-button:hover {
+  background-color: var(--btn-primary) !important;
+  border-color:     var(--btn-primary) !important;
+}
+.btn-success:hover,
+.join-button:hover {
+  background-color: var(--btn-primary-h) !important;
+}
+
+/* Icons & accents */
+.landing-header h1 i,
+.meeting-info i,
+.accent {
+  color: var(--accent) !important;
+}
+
+/* Input borders/text */
+.form-control,
+.input-group-text {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid #ccc;
+}
+
+/* Make sure toggling is instantaneous */
+body,
+body.light-mode * {
+  transition: background-color .3s, color .3s;
+}
+
+body.light-mode .option-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+body.light-mode .landing-content {
+  border-radius: 16px;
+}
