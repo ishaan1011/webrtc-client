@@ -882,3 +882,23 @@ body {
   /* keep the video centered in its box */
   transform-origin: center center;
 }
+
+/* make active‐rooms + your-settings sit side-by-side */
+.bottom-section {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px; /* give it some breathing room under the top cards */
+}
+
+/* each pane takes half the width on desktop */
+.bottom-section .active-rooms,
+.bottom-section .user-settings {
+  flex: 1;
+}
+
+/* stack on mobile */
+@media (max-width: 768px) {
+  .bottom-section {
+    flex-direction: column;
+  }
+}
