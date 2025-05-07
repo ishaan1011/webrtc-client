@@ -87,7 +87,7 @@ body {
 
 .option-card {
   flex: 1;
-  background-color: #292929d9;
+  background-color: rgba(60, 60, 60, 0.9);
   backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
@@ -110,7 +110,7 @@ body {
 }
 
 .active-rooms {
-  background-color: #292929d9;
+  background-color: rgba(60, 60, 60, 0.9);
   backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
@@ -155,7 +155,7 @@ body {
 }
 
 .user-settings {
-  background-color: #292929d9;
+  background-color: rgba(60, 60, 60, 0.9);
   backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
