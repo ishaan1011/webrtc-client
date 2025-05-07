@@ -80,7 +80,8 @@ body {
 
 .option-card {
   flex: 1;
-  background-color: rgba(50,50,50,0.9);
+  background-color: rgba(50,50,50,0.5);
+  backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
   text-align: center;
