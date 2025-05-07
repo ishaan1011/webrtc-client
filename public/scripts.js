@@ -698,12 +698,6 @@ function setupSocketListeners() {
     showMessage(message, 'from-other');
   });
 
-  socket.on('sendMessage', message => {
-    const { roomId, userName } = socket.handshake.auth;
-    // broadcast to everyone in room (including sender if you like)
-    io.to(roomId).emit('receiveMessage', { userName, message });
-  });
-  
 }
 
 // Update the participants list in the UI
