@@ -873,3 +873,12 @@ body {
 #settings-modal .modal-dialog {
   max-width: 360px;
 }
+
+/* mirror only your local preview (not the remote stream) */
+#local-video,
+#camera-preview,
+#settings-video-preview {
+  transform: scaleX(-1);
+  /* keep the video centered in its box */
+  transform-origin: center center;
+}
