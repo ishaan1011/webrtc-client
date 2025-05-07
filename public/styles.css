@@ -1150,3 +1150,33 @@ body:not(.light-mode) .input-group .input-group-text {
   color: #000 !important;
   border-color: #ccc !important;
 }
+
+/* ————————————————————————————————
+   Light‐mode overall background + card tweaks
+   ———————————————————————————————— */
+   body.light-mode {
+    background-color: #fafafa; /* a soft off-white */
+    color: #222;               /* dark text for legibility */
+  }
+  
+  /* make the “cards” pop against that pale bg */
+  body.light-mode .landing-content,
+  body.light-mode .option-card {
+    background-color: #ffffff; /* pure white cards */
+    color: #222;               /* dark text inside them */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  /* inputs/buttons in cards */
+  body.light-mode .form-control,
+  body.light-mode .input-group-text,
+  body.light-mode .btn {
+    background-color: #f0f0f0;
+    color: #222;
+    border-color: #ddd;
+  }
+  body.light-mode .btn.btn-success {
+    background-color: #e74c3c; /* switch your “success” → red */
+    border-color: #e74c3c;
+    color: #fff;
+  }  
