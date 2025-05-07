@@ -853,3 +853,23 @@ body {
 .participants-grid {
   grid-auto-rows: auto;
 }
+
+/* ============================== */
+/*  SETTINGS MODAL VIDEO PREVIEW  */
+/* ============================== */
+
+/* Constrain the settings‐modal camera preview */
+#settings-modal .settings-preview video {
+  width: 100%;          /* fill its container width */
+  max-width: 320px;     /* don’t exceed this even on large cameras */
+  height: auto;         /* keep aspect ratio */
+  border-radius: 8px;   /* match your card styling */
+  object-fit: cover;    /* crop neatly inside the box */
+  display: block;       /* no inline quirks */
+  margin: 0 auto;       /* center it in the modal */
+}
+
+/* Optionally tighten up the modal width */
+#settings-modal .modal-dialog {
+  max-width: 360px;
+}
