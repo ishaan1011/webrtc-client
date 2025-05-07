@@ -419,8 +419,9 @@ async function applyDeviceSettings() {
     
     console.log('Applied device settings:', state.selectedDevices);
     
-    // Close settings modal (Tailwind)
-    document.getElementById('settings-modal')?.classList.add('hidden');
+    // Close settings modal
+    const settingsModal = bootstrap.Modal.getInstance(document.getElementById('settings-modal'));
+    if (settingsModal) settingsModal.hide();
     
   } catch (error) {
     console.error('Error applying device settings:', error);
@@ -524,66 +525,37 @@ function setupEventListeners() {
   
   // Show/hide chat sidebar
   elements.chatBtn?.addEventListener('click', () => {
-    elements.chatSidebar.classList.toggle('translate-x-0');
-    elements.participantsSidebar.classList.add('translate-x-full');
+    elements.chatSidebar.classList.toggle('show');
+    elements.participantsSidebar.classList.remove('show');
   });
   elements.closeChatBtn?.addEventListener('click', () => {
-    elements.chatSidebar.classList.add('translate-x-full');
+    elements.chatSidebar.classList.remove('show');
   });
   
   // Show/hide participants sidebar
   elements.participantsBtn?.addEventListener('click', () => {
-    elements.participantsSidebar.classList.toggle('translate-x-0');
-    elements.chatSidebar.classList.add('translate-x-full');
+    elements.participantsSidebar.classList.toggle('show');
+    elements.chatSidebar.classList.remove('show');
   });
   elements.closeParticipantsBtn?.addEventListener('click', () => {
-    elements.participantsSidebar.classList.add('translate-x-full');
+    elements.participantsSidebar.classList.remove('show');
   });
   
-  // Open settings (save focus, show modal)
+  // Settings button
   elements.settingsBtn?.addEventListener('click', () => {
-    // save last focused element
-    const lastFocus = document.activeElement;
-    document.getElementById('settings-modal').dataset.returnFocus = lastFocus?.id || '';
-
-    // Update preview
+    // Update preview in settings modal
     if (elements.settingsVideoPreview && state.localStream) {
       elements.settingsVideoPreview.srcObject = state.localStream;
     }
-
-    // Show modal and trap focus
-    const modal = document.getElementById('settings-modal');
-    modal.classList.remove('hidden');
-    const focusable = modal.querySelectorAll(
-      'button, [href], select, input, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    focusable[0]?.focus();
+    
+    // Initialize Bootstrap modal
+    const settingsModal = new bootstrap.Modal(document.getElementById('settings-modal'));
+    settingsModal.show();
   });
-
   
   // Apply settings button
   elements.applySettingsBtn?.addEventListener('click', () => applyDeviceSettings());
-
-  // Close settings (restore focus)
-  ['close-settings', 'cancel-settings'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', () => {
-      const modal = document.getElementById('settings-modal');
-      modal.classList.add('hidden');
-      const returnId = modal.dataset.returnFocus;
-      returnId && document.getElementById(returnId)?.focus();
-    });
-  });
-
-  // Close on ESC
-  document.addEventListener('keydown', e => {
-    if (
-      e.key === 'Escape' &&
-      !document.getElementById('settings-modal')?.classList.contains('hidden')
-    ) {
-      document.getElementById('cancel-settings')?.click();
-    }
-  });
-
+  
   // Call and hangup
   elements.callButton?.addEventListener('click', () => initiateCall().catch(console.error));
   elements.hangupButton?.addEventListener('click', () => {
