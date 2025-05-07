@@ -533,6 +533,12 @@ function setupEventListeners() {
   elements.closeChatBtn?.addEventListener('click', () => {
     elements.chatSidebar.classList.remove('show');
   });
+
+  // Send chat messages
+  elements.sendChatBtn?.addEventListener('click', sendChatMessage);
+  elements.chatInput?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendChatMessage();
+  });
   
   // Show/hide participants sidebar
   elements.participantsBtn?.addEventListener('click', () => {
@@ -570,6 +576,16 @@ function setupEventListeners() {
   
   // Check URL for room parameter
   checkUrlForRoom();
+}
+
+function sendChatMessage() {
+  const text = elements.chatInput.value.trim();
+  if (!text) return;
+  // send to server
+  socket.emit('sendMessage', text);
+  // render locally
+  showMessage(text, 'from-me');
+  elements.chatInput.value = '';
 }
 
 // Toggle audio mute
@@ -677,6 +693,17 @@ function setupSocketListeners() {
 
     window.location.href = window.location.origin;
   });
+
+  socket.on('receiveMessage', ({ userName, message }) => {
+    showMessage(message, 'from-other');
+  });
+
+  socket.on('sendMessage', message => {
+    const { roomId, userName } = socket.handshake.auth;
+    // broadcast to everyone in room (including sender if you like)
+    io.to(roomId).emit('receiveMessage', { userName, message });
+  });
+  
 }
 
 // Update the participants list in the UI
