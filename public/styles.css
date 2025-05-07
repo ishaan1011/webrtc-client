@@ -940,3 +940,14 @@ body {
   width: 100%;
   margin: 0 auto 1rem; /* center it and add bottom spacing */
 }
+
+/* more breathing room in the settings card */
+.user-settings .input-group {
+  /* was margin-bottom: 1rem; let’s double it */
+  margin: 0 auto 2rem;
+}
+
+.user-settings .device-preview {
+  /* was margin-top: ~1rem/20px; let’s make it a bit bigger */
+  margin-top: 2.5rem;
+}
