@@ -47,9 +47,11 @@ body {
   padding: 30px;
 }
 
-.landing-header h1 {
+.landing-header {
+  text-align: center;
   font-family: 'Pacifico', cursive !important;
   letter-spacing: 1px;
+  margin-bottom: 30px;
 }
 
 .landing-header h1 {
