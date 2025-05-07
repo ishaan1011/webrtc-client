@@ -712,3 +712,33 @@ body {
 .control-button.muted:hover {
   background-color: #c82727;
 }
+
+/* incoming-call overlay */
+.incoming-call-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  z-index: 1000;
+  width: 90%;
+  max-width: 300px;
+}
+
+.incoming-call-text {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.incoming-call-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.incoming-call-buttons .btn {
+  flex: 1;
+}

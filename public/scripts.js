@@ -714,30 +714,32 @@ function updateParticipantsList(participants) {
 function showIncomingCallUI(offerObj) {
   const answerDiv = document.getElementById('answer');
   if (!answerDiv) return;
-  
+
   answerDiv.innerHTML = `
-    <div class="incoming-call">
-      <div class="caller-info">
-        <strong>${offerObj.offererUserName}</strong> is calling...
-      </div>
+    <div class="incoming-call-modal">
+      <p class="incoming-call-text">
+        User <strong>${offerObj.offererUserName}</strong> is requesting to join the call
+      </p>
       <div class="incoming-call-buttons">
-        <button class="accept-call">Accept</button>
-        <button class="reject-call">Reject</button>
+        <button id="accept-call-btn" class="btn btn-success">Accept</button>
+        <button id="reject-call-btn" class="btn btn-danger ms-2">Reject</button>
       </div>
     </div>
   `;
-  
-  // Accept call
-  answerDiv.querySelector('.accept-call').addEventListener('click', () => {
-    answerOffer(offerObj).catch(console.error);
-    answerDiv.innerHTML = '';
-  });
-  
-  // Reject call
-  answerDiv.querySelector('.reject-call').addEventListener('click', () => {
-    socket.emit('rejectCall', offerObj.offererUserName);
-    answerDiv.innerHTML = '';
-  });
+
+  document
+    .getElementById('accept-call-btn')
+    .addEventListener('click', () => {
+      answerOffer(offerObj).catch(console.error);
+      answerDiv.innerHTML = '';
+    });
+
+  document
+    .getElementById('reject-call-btn')
+    .addEventListener('click', () => {
+      socket.emit('rejectCall', offerObj.offererUserName);
+      answerDiv.innerHTML = '';
+    });
 }
 
 // Show a message in the chat
