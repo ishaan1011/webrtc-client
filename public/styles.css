@@ -23,7 +23,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: var(--bg) !important;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
   padding: 20px;
 }
 
@@ -1101,4 +1101,8 @@ body:not(.light-mode) .input-group .input-group-text {
   background: #fff !important;
   color: #000 !important;
   border-color: #ccc !important;
+}
+
+body.light-mode .landing-container {
+  background: var(--bg) !important;  /* → #fafafa */
 }
