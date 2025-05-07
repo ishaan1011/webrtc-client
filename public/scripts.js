@@ -1,5 +1,5 @@
 /**
- * ConnectMeet - WebRTC video conferencing with room support
+ * Comm360 - WebRTC video conferencing with room support
  * Enhanced from original WebRTC implementation
  */
 
