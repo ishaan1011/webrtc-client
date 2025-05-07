@@ -839,3 +839,17 @@ body {
   font-size: 11px;
   padding: 6px 10px;
 }
+
+/* force every participant cell to be 16:9 */
+.participants-grid .video-wrapper {
+  /* ensure each wrapper is the same ratio */
+  aspect-ratio: 16 / 9;
+  /* fill the grid cell */
+  width: 100%;
+  height: auto;
+}
+
+/* make grid rows uniform (this makes that ratio stick) */
+.participants-grid {
+  grid-auto-rows: auto;
+}
