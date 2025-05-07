@@ -559,7 +559,6 @@ function setupEventListeners() {
   elements.applySettingsBtn?.addEventListener('click', () => applyDeviceSettings());
   
   // Call and hangup
-  elements.callButton?.addEventListener('click', () => initiateCall().catch(console.error));
   elements.hangupButton?.addEventListener('click', () => {
     socket.emit('hangup');
     cleanup();
