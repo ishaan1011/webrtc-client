@@ -724,8 +724,10 @@ body {
   border-radius: 0.5rem;
   text-align: center;
   z-index: 1000;
-  width: 90%;
-  max-width: 300px;
+  width: auto;
+  min-width: 300px;
+  max-width: 80%;
+  white-space: nowrap;
 }
 
 .incoming-call-text {
