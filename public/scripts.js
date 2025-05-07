@@ -194,6 +194,7 @@ function createRoom() {
   
   // Switch to meeting view
   showMeetingView();
+  initiateCall().catch(console.error);
 }
 
 // Join an existing room
@@ -209,6 +210,7 @@ function joinRoom(roomId) {
   
   // Switch to meeting view
   showMeetingView();
+  initiateCall().catch(console.error);
 }
 
 // Switch from landing page to meeting view
