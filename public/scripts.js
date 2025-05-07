@@ -710,6 +710,11 @@ function updateParticipantsList(participants) {
   if (participantCount) {
     participantCount.textContent = participants.length;
   }
+
+  const sidebarHeader = document.querySelector('#participants-sidebar .sidebar-header h5');
+  if (sidebarHeader) {
+    sidebarHeader.textContent = `Participants (${participants.length})`;
+  }
   
   // Build the participants list HTML
   const participantsHtml = participants.map(userName => {
@@ -728,6 +733,11 @@ function updateParticipantsList(participants) {
   }).join('');
   
   participantsList.innerHTML = participantsHtml;
+
+  const gridEl = elements.participantsGrid;
+  gridEl.classList.toggle('two-participants',   participants.length === 2);
+  gridEl.classList.toggle('three-participants', participants.length === 3);
+  gridEl.classList.toggle('four-participants',  participants.length === 4);
 }
 
 // Show incoming call UI
