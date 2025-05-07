@@ -1117,3 +1117,24 @@ body.light-mode .option-card {
 body.light-mode .landing-content {
   border-radius: 16px;
 }
+
+/* -------------------------------- */
+/*  THEME-TOGGLE BUTTON STYLING     */
+/* -------------------------------- */
+#theme-toggle {
+  /* use your existing “card color” var in dark mode */
+  background: var(--card-bg);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background .3s, color .3s;
+}
+
+/* when light mode is active, force it white */
+body.light-mode #theme-toggle {
+  background: #fff;
+  color: #1a1a1a; /* your dark text */
+}

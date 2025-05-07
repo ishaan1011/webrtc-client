@@ -160,11 +160,11 @@ async function init() {
     document.body.classList.add('light-mode');
   }
   // set correct icon
-  themeToggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '🌞';
+  themeToggle.textContent = document.body.classList.contains('light-mode') ? '🌑' : '🔆';
   // on click, flip
   themeToggle.addEventListener('click', () => {
     const isLight = document.body.classList.toggle('light-mode');
-    themeToggle.textContent = isLight ? '🌙' : '🌞';
+    themeToggle.textContent = isLight ? '🌑' : '🔆';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
   });
 }
