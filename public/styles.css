@@ -985,3 +985,33 @@ body {
   /* keep your horizontal padding */
   padding: 0 0.75rem !important;
 }
+
+/* ========== Light Mode Overrides ========== */
+
+body.light-mode {
+  background-color: #fff !important;
+  color: #e02f2f !important;
+}
+
+body.light-mode .landing-content,
+body.light-mode .option-card,
+body.light-mode .active-rooms,
+body.light-mode .user-settings {
+  background-color: #fff !important;
+  color: #e02f2f !important;
+}
+
+body.light-mode .btn-primary,
+body.light-mode .btn-success,
+body.light-mode .leave-button,
+body.light-mode .btn-secondary {
+  background-color: #e02f2f !important;
+  border-color: #e02f2f !important;
+  color: #fff !important;
+}
+
+body.light-mode .form-control,
+body.light-mode input {
+  background-color: #fff !important;
+  color: #000 !important;
+}

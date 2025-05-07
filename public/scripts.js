@@ -152,6 +152,21 @@ async function init() {
   } catch (error) {
     console.error('Error initializing application:', error);
   }
+
+  // — Theme toggle logic —
+  const themeToggle = document.getElementById('theme-toggle');
+  // initialize from localStorage (default = dark)
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-mode');
+  }
+  // set correct icon
+  themeToggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '🌞';
+  // on click, flip
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    themeToggle.textContent = isLight ? '🌙' : '🌞';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
 }
 
 // Initialize the signaling connection for a specific room
