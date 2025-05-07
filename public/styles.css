@@ -267,12 +267,14 @@ body {
 /* Participants grid */
 .participants-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* auto-fit 400px cards, center if only one participant */
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   grid-auto-rows: 1fr;
-  gap: 16px;
+  gap: 24px;
   width: 100%;
   height: 100%;
-  max-height: calc(100vh - 128px); /* Account for header and controls */
+  max-height: calc(100vh - 128px);
+  justify-content: center;
 }
 
 /* Gallery view - 2 participants */
@@ -313,10 +315,10 @@ body {
 /* Video wrapper */
 .video-wrapper {
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  background-color: #242424;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 .video-wrapper video {
@@ -328,7 +330,7 @@ body {
 
 /* Empty participant slot */
 .empty-participant-slot {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background-color: #1e1e1e;
