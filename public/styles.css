@@ -105,7 +105,7 @@ body {
   background-color: #292929d9;
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .active-rooms h4 {
@@ -892,11 +892,11 @@ body {
 }
 
 /* each pane takes half the width on desktop */
-.bottom-section > .active-rooms,
-.bottom-section > .user-settings {
-  flex: 1;
-  display: flex;           
+.bottom-section > .option-card {
+  display: flex;
   flex-direction: column;
+  align-self: stretch;    /* stretch to match taller cell */
+  height: 100%;           /* fill its grid row */
 }
 
 .active-rooms-list {
