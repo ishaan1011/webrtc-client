@@ -103,7 +103,8 @@ body {
 }
 
 .active-rooms {
-  background-color: #292929d9;
+  background-color: rgba(50,50,50,0.5);
+  backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 0;
@@ -147,7 +148,8 @@ body {
 }
 
 .user-settings {
-  background-color: #292929d9;
+  background-color: rgba(50,50,50,0.5);
+  backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
 }
