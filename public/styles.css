@@ -910,3 +910,33 @@ body {
     flex-direction: column;
   }
 }
+
+/* ======================= */
+/* Tweak Active Rooms card */
+/* ======================= */
+
+/* Make Active Rooms use the full card height, then center its content */
+.option-card.active-rooms .active-rooms-list {
+  /* allow the list to grow */
+  flex: 1;
+  /* center whatever’s inside */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* if you want a minimum height similar to your video area */
+  min-height: 180px;
+}
+
+
+/* ======================================= */
+/* Constrain Display Name to Preview Width */
+/* ======================================= */
+
+/* Keep that input group the same width as your 320px video below */
+.user-settings .input-group {
+  max-width: 320px;   /* same as .camera-preview width */
+  width: 100%;
+  margin: 0 auto 1rem; /* center it and add bottom spacing */
+}
