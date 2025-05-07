@@ -1,6 +1,6 @@
 /* Comm360 UI styles */
 
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -49,8 +49,11 @@ body {
 
 .landing-header {
   text-align: center;
-  font-family: 'Pacifico', cursive !important;
-  letter-spacing: 1px;
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: 0.5px;
+  color: #f1f1f1;
   margin-bottom: 30px;
 }
 
@@ -968,12 +971,17 @@ body {
   margin: 0 auto 1rem; /* center and add a little bottom gap */
 }
 
-/* match New Meeting button height to the join-room input */
+/* === force New Meeting to match form-control height === */
 #new-meeting {
-  /* bootstrap form-controls default to 2.25rem + 2px border */
-  height: calc(2.25rem + 2px);
-  line-height: 1.5;       /* vertically center the text */
-  padding: 0 0.75rem;     /* keep your existing left/right padding */
-  display: inline-flex;   /* so height takes effect */
-  align-items: center;    /* vertically center the “+ New Meeting” text */
+  /* match a .form-control’s height (2.25rem + 2px border) */
+  height: calc(2.25rem + 2px) !important;
+  min-height: calc(2.25rem + 2px) !important;
+
+  /* center the text/icon vertically */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* keep your horizontal padding */
+  padding: 0 0.75rem !important;
 }
