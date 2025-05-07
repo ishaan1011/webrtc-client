@@ -23,7 +23,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  background: var(--bg) !important;
   padding: 20px;
 }
 
@@ -58,9 +58,8 @@ body {
 }
 
 .landing-header h1 {
-  font-size: 36px;
-  color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
+  line-height: 1.1;
 }
 
 .landing-header h1 i {
@@ -87,7 +86,7 @@ body {
 
 .option-card {
   flex: 1;
-  background-color: rgba(60, 60, 60, 0.9);
+  background-color: var(--card-bg);
   backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
@@ -110,7 +109,7 @@ body {
 }
 
 .active-rooms {
-  background-color: rgba(60, 60, 60, 0.9);
+  background-color: var(--card-bg);
   backdrop-filter: blur(8px);
   border-radius: 8px;
   padding: 20px;
@@ -986,59 +985,12 @@ body {
   padding: 0 0.75rem !important;
 }
 
-/* ========== Light Mode Overrides ========== */
-
-body.light-mode {
-  background-color: #fff !important;
-  color: #e02f2f !important;
-}
-
-body.light-mode .landing-content,
-body.light-mode .option-card,
-body.light-mode .active-rooms,
-body.light-mode .user-settings {
-  background-color: #fff !important;
-  color: #e02f2f !important;
-}
-
-body.light-mode .btn-primary,
-body.light-mode .btn-success,
-body.light-mode .leave-button,
-body.light-mode .btn-secondary {
-  background-color: #e02f2f !important;
-  border-color: #e02f2f !important;
-  color: #fff !important;
-}
-
-body.light-mode .form-control,
-body.light-mode input {
-  background-color: #fff !important;
-  color: #000 !important;
-}
-
-/* ────────────────────────────────────────
-   Theme toggle button positioning
-──────────────────────────────────────── */
-#theme-toggle {
-  position: fixed;      /* stick to the viewport */
-  top: 16px; 
-  right: 16px;
-  z-index: 10000;       /* above everything */
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  font-size: 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* ========================== */
 /*   LIGHT / DARK THEME VARS  */
 /* ========================== */
 :root {
   --bg:            #1a1a1a;
-  --card-bg:       rgba(30, 30, 30, 0.8);
+  --card-bg:       rgba(60,60,60,0.8);
   --text:          #fff;
   --subtext:       #aaa;
   --accent:        #4caf50;
@@ -1150,33 +1102,3 @@ body:not(.light-mode) .input-group .input-group-text {
   color: #000 !important;
   border-color: #ccc !important;
 }
-
-/* ————————————————————————————————
-   Light‐mode overall background + card tweaks
-   ———————————————————————————————— */
-   body.light-mode {
-    background-color: #fafafa; /* a soft off-white */
-    color: #222;               /* dark text for legibility */
-  }
-  
-  /* make the “cards” pop against that pale bg */
-  body.light-mode .landing-content,
-  body.light-mode .option-card {
-    background-color: #ffffff; /* pure white cards */
-    color: #222;               /* dark text inside them */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  
-  /* inputs/buttons in cards */
-  body.light-mode .form-control,
-  body.light-mode .input-group-text,
-  body.light-mode .btn {
-    background-color: #f0f0f0;
-    color: #222;
-    border-color: #ddd;
-  }
-  body.light-mode .btn.btn-success {
-    background-color: #e74c3c; /* switch your “success” → red */
-    border-color: #e74c3c;
-    color: #fff;
-  }  
