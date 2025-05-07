@@ -1,5 +1,7 @@
 /* Comm360 UI styles */
 
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -45,9 +47,9 @@ body {
   padding: 30px;
 }
 
-.landing-header {
-  text-align: center;
-  margin-bottom: 30px;
+.landing-header h1 {
+  font-family: 'Pacifico', cursive !important;
+  letter-spacing: 1px;
 }
 
 .landing-header h1 {
@@ -962,4 +964,14 @@ body {
   max-width: 320px;   /* same as your camera preview width */
   width: 100%;
   margin: 0 auto 1rem; /* center and add a little bottom gap */
+}
+
+/* match New Meeting button height to the join-room input */
+#new-meeting {
+  /* bootstrap form-controls default to 2.25rem + 2px border */
+  height: calc(2.25rem + 2px);
+  line-height: 1.5;       /* vertically center the text */
+  padding: 0 0.75rem;     /* keep your existing left/right padding */
+  display: inline-flex;   /* so height takes effect */
+  align-items: center;    /* vertically center the “+ New Meeting” text */
 }
