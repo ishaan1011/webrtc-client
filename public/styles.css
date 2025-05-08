@@ -1228,3 +1228,14 @@ body.light-mode .zoom-container .view-toggle {
 body.light-mode .zoom-container .view-toggle:hover {
   background-color: var(--bg) !important;
 }
+
+/* ───────────────────────────────────────────── */
+/* Sidebar “X” close-button: light-mode styling */
+/* ───────────────────────────────────────────── */
+body.light-mode .zoom-container .close-sidebar {
+  color: var(--text) !important;
+}
+
+body.light-mode .zoom-container .close-sidebar:hover {
+  color: var(--accent) !important;
+}
