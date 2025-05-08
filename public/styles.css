@@ -1121,17 +1121,20 @@ body.light-mode .option-card.active-rooms .room-card {
   background-color: var(--bg) !important;
 }
 
-/* at the bottom of styles.css */
+/* ─────────────────────────────────────────── */
+/* Equal-width Active-Rooms cards (full width) */
+/* ─────────────────────────────────────────── */
 
 .option-card.active-rooms .active-rooms-list {
+  /* ensure we lay them out in a single column, one per row */
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 10px; /* preserve your existing gap */
 }
 
 .option-card.active-rooms .active-rooms-list .room-card {
-  /* grow/shrink equally, no base width */
-  flex: 1 1 0;
-  /* optional: prevent them getting too narrow */
-  min-width: 150px;
+  /* each card takes the full width of its parent */
+  flex: 0 0 100%;
+  max-width: 100%;
+  width: 100%;
 }
