@@ -39,6 +39,7 @@ body {
 }
 
 .landing-content {
+  position: relative;
   width: 100%;
   max-width: 1000px;
   background-color: rgba(30, 30, 30, 0.8);
@@ -1075,6 +1076,10 @@ body.light-mode .landing-content {
 /* -------------------------------- */
 #theme-toggle {
   /* use your existing “card color” var in dark mode */
+  position: absolute;    /* new */
+  top: 16px;             /* adjust to taste */
+  left: 16px;            /* adjust to taste */
+  z-index: 50;           /* make sure it’s on top */
   background: var(--card-bg);
   color: var(--text);
   border: none;
