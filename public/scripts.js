@@ -197,7 +197,7 @@ function initializeSignaling(roomId) {
   
   // Connect to signaling server with room ID
   socket = io(SIGNALING_SERVER_URL, {
-    // transports: ['websocket'],
+    transports: ['websocket'],
     auth: { 
       userName: state.userName, 
       password: 'x',
