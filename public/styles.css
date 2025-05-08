@@ -1120,3 +1120,18 @@ body.light-mode .option-card.active-rooms .room-card {
   /* make the card a very light shade */
   background-color: var(--bg) !important;
 }
+
+/* at the bottom of styles.css */
+
+.option-card.active-rooms .active-rooms-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.option-card.active-rooms .active-rooms-list .room-card {
+  /* grow/shrink equally, no base width */
+  flex: 1 1 0;
+  /* optional: prevent them getting too narrow */
+  min-width: 150px;
+}
