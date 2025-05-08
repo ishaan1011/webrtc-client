@@ -1163,3 +1163,68 @@ body.light-mode .zoom-container .incoming-calls,
 body.light-mode .zoom-container .incoming-calls * {
   color: var(--text) !important;
 }
+
+/* ───────────────────────────────────────────── */
+/* Meeting-room Light-mode overrides            */
+/* ───────────────────────────────────────────── */
+body.light-mode .zoom-container {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* Sidebars (chat + participants) */
+body.light-mode .zoom-container .sidebar {
+  background-color: var(--card-bg) !important;
+}
+body.light-mode .zoom-container .sidebar-header {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+body.light-mode .zoom-container .sidebar h5,
+body.light-mode .zoom-container .participant-name {
+  color: var(--text) !important;
+}
+
+/* Chat messages */
+body.light-mode .zoom-container .chat-message.from-other {
+  background-color: #e0e0e0 !important;
+  color: #000 !important;
+}
+body.light-mode .zoom-container .chat-message.from-me {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* Chat input field */
+body.light-mode .zoom-container .chat-input {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+}
+
+/* Video overlay bars (participant names & statuses) */
+body.light-mode .zoom-container .video-overlay {
+  background: rgba(255,255,255,0.6) !important;
+}
+body.light-mode .zoom-container .video-overlay .participant-name,
+body.light-mode .zoom-container .video-overlay .connection-status i {
+  color: var(--text) !important;
+}
+
+/* Bottom toolbar buttons */
+body.light-mode .zoom-container .control-button {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+body.light-mode .zoom-container .control-button:hover {
+  background-color: var(--bg) !important;
+}
+
+/* Gallery/Speaker toggle */
+body.light-mode .zoom-container .view-toggle {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+body.light-mode .zoom-container .view-toggle:hover {
+  background-color: var(--bg) !important;
+}
