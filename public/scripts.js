@@ -157,13 +157,13 @@ async function init() {
   const themeToggle = document.getElementById('theme-toggle');
   // initialize from localStorage (default = dark)
   if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-mode');
+    document.documentElement.classList.add('light-mode');
   }
   // set correct icon
-  themeToggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '🔆';
+  themeToggle.textContent = document.documentElement.classList.contains('light-mode') ? '🌙' : '🔆';
   // on click, flip
   themeToggle.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
+    const isLight = document.documentElement.classList.toggle('light-mode');
     themeToggle.textContent = isLight ? '🌙' : '🔆';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
   });
