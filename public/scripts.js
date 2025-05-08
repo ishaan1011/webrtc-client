@@ -939,11 +939,42 @@ async function addAnswer(offerObj) {
 
 // Setup WebRTC peer connection
 async function setupPeerConnection(offerObj = null) {
-  // Get ICE servers from signaling server
-  const iceServers = await fetchIceConfig();
-  
-  // Create peer connection
-  state.peerConnection = new RTCPeerConnection({ iceServers });
+  // 1️⃣ Statically define your ICE servers, falling back to STUN + TURN  
+  //    (you can still fetch dynamic ones via your /ice endpoint if you like)
+  const iceServers = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    {
+      urls: [
+        'turn:your.turn.server:3478?transport=udp',
+        'turn:your.turn.server:3478?transport=tcp'
+      ],
+      username: 'TURN_USERNAME',
+      credential: 'TURN_CREDENTIAL'
+    }
+  ];
+
+  // 2️⃣ Add a small pool so candidates are gathered early,
+  //    and bundle all tracks on one transport to reduce latency.
+  const pcConfig = {
+    iceServers,
+    iceCandidatePoolSize: 5,      // gathers candidates up front
+    bundlePolicy: 'max-bundle',   // bundle audio+video on one 5‑tuple
+    rtcpMuxPolicy: 'require'      // force RTCP mux (fewer sockets)
+  };
+
+  state.peerConnection = new RTCPeerConnection(pcConfig);
+
+  // 3️⃣ Optional: cap your send bitrate right away
+  state.peerConnection.addEventListener('negotiationneeded', async () => {
+    const sender = state.peerConnection.getSenders()
+                         .find(s => s.track.kind === 'video');
+    if (sender && sender.getParameters) {
+      const params = sender.getParameters();
+      params.encodings = params.encodings || [{}];
+      params.encodings[0].maxBitrate = 500_000; // 500 kbps for video
+      sender.setParameters(params).catch(console.warn);
+    }
+  });
 
   // Prepare remote stream
   state.remoteStream = new MediaStream();
@@ -955,6 +986,7 @@ async function setupPeerConnection(offerObj = null) {
       state.peerConnection.addTrack(track, state.localStream);
     });
   }
+
 
   // Relay ICE candidates via signaling server
   state.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
