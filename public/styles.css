@@ -1330,3 +1330,16 @@ body:not(.light-mode) .input-group .input-group-text {
 .light-mode #theme-toggle::before {
   content: "🌙";
 }
+
+/* ───────────────────────────────────────────── */
+/* Tweak spacing in the Your Settings panel     */
+/* ───────────────────────────────────────────── */
+.user-settings .input-group {
+  /* add 1.5rem above, only 0.5rem below */
+  margin: 1.5rem auto 0.5rem !important;
+}
+
+.user-settings .device-preview {
+  /* tighten top gap above the video preview */
+  margin-top: 1rem !important;
+}
