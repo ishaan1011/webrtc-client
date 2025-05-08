@@ -1083,6 +1083,7 @@ body.light-mode .landing-content {
   font-size: 1.2rem;
   cursor: pointer;
   transition: background .3s, color .3s;
+
 }
 
 /* when light mode is active, force it white */
