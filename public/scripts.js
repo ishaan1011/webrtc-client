@@ -600,6 +600,7 @@ function setupEventListeners() {
   elements.hangupButton?.addEventListener('click', () => {
     socket.emit('hangup');
     cleanup();
+    if (socket) socket.disconnect();      // tear down socket immediately
     if (elements.callButton) elements.callButton.disabled = false;
     if (elements.hangupButton) elements.hangupButton.disabled = true;
 
