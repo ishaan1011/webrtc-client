@@ -1289,3 +1289,19 @@ body:not(.light-mode) .input-group .input-group-text {
   padding: 0 !important;
   margin-bottom: 0.25rem; /* a bit of breathing room */
 }
+
+/* ───────────────────────────────────────────── */
+/* Make the Hangup/Leave button always red      */
+/* ───────────────────────────────────────────── */
+.zoom-container .control-button.leave-button,
+.zoom-container #hangup {
+  /* your red dial-tone color */
+  background-color: #e02f2f !important;
+  color: #fff !important;
+}
+
+.zoom-container .control-button.leave-button:hover,
+.zoom-container #hangup:hover {
+  /* a slightly darker red on hover */
+  background-color: #c82727 !important;
+}
