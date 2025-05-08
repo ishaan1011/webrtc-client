@@ -212,7 +212,7 @@ body {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background-color: #1a1a1a;
+  background-color: var(--bg);
 }
 
 /* Meeting header */
@@ -221,8 +221,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background-color: #242424;
-  border-bottom: 1px solid #3a3a3a;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--btn-primary-h);
   height: 48px;
   z-index: 10;
 }
@@ -259,7 +259,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #0e0e0e;
+  background-color: var(--bg);
 }
 
 /* Video container */
@@ -270,7 +270,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: #0e0e0e;
+  background-color: var(--bg);
   padding: 20px;
 }
 
@@ -452,8 +452,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background-color: #1a1a1a;
-  border-top: 1px solid #3a3a3a;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--btn-primary-h);
   height: 80px;
   z-index: 10;
 }
@@ -550,8 +550,8 @@ body {
   right: -380px;
   width: 320px;
   height: 100%;
-  background-color: #242424;
-  border-left: 1px solid #3a3a3a;
+  background-color: var(--card-bg);
+  border-left: 1px solid var(--btn-primary-h);
   transition: right 0.3s ease;
   z-index: 20;
   display: flex;
@@ -768,15 +768,14 @@ body {
 
 /* overall meeting bg */
 .zoom-container {
-  background: #121212;
+  background: var(--bg);
 }
 
 /* translucent header/footer */
 .meeting-header,
 .meeting-controls {
-  background: rgba(24, 24, 24, 0.6);
+  background: var(--card-bg);
   backdrop-filter: blur(8px);
-  border: none;
   padding: 8px 16px;
 }
 
