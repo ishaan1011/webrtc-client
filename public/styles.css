@@ -1358,3 +1358,27 @@ body:not(.light-mode) .input-group .input-group-text {
 #remote-video-wrapper .audio-badge {
   display: none;
 }
+
+/* ───────────────────────────────────────────── */
+/* Make incoming-call UI visible in light mode  */
+/* ───────────────────────────────────────────── */
+.light-mode .incoming-call-modal {
+  /* panel background and text */
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--btn-primary-h) !important;
+}
+
+/* “Accept” = success (green in dark, green in light) */
+.light-mode .incoming-call-modal .btn-success {
+  background-color: var(--accent) !important;
+  border-color:     var(--accent) !important;
+  color: #fff !important;
+}
+
+/* “Reject” = danger (red in both modes) */
+.light-mode .incoming-call-modal .btn-danger {
+  background-color: var(--btn-primary) !important;
+  border-color:     var(--btn-primary) !important;
+  color: #fff !important;
+}
