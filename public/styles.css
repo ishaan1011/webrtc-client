@@ -989,7 +989,7 @@ body {
 /*   LIGHT / DARK THEME VARS  */
 /* ========================== */
 :root {
-  --bg:            #1a1a1a;
+  --bg:            #302e2e;
   --card-bg:       rgba(51,51,51,0.8);
   --text:          #fff;
   --subtext:       #aaa;
