@@ -1129,12 +1129,14 @@ body.light-mode .option-card.active-rooms .room-card {
   /* ensure we lay them out in a single column, one per row */
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px; /* preserve your existing gap */
 }
 
 .option-card.active-rooms .active-rooms-list .room-card {
   /* each card takes the full width of its parent */
-  flex: 0 0 100%;
-  max-width: 100%;
-  width: 100%;
+  margin: 0;
+  flex: none;
+  max-width: 600px;
+  width: 75%;
 }
