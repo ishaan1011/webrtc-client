@@ -1060,7 +1060,7 @@ h1, h3, .tagline, p {
 /* Make sure toggling is instantaneous */
 body,
 body.light-mode * {
-  transition: background-color .3s, color .3s;
+  transition: background-color .3s;
 }
 
 body.light-mode .option-card {
