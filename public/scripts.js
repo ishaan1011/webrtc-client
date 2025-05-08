@@ -833,20 +833,32 @@ function showMessage(message, type = 'system') {
 
 // Fetch ICE server configuration from signaling server
 async function fetchIceConfig() {
-  const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
-  if (!res.ok) throw new Error('Failed to fetch ICE config');
-  const { iceServers } = await res.json();
+  // build up our list starting with a public STUN
+  const iceServers = [
+    { urls: 'stun:stun.l.google.com:19302' }
+  ];
 
-  // Normalize each entry so it has a `urls` field
-  return iceServers.map(s => {
-    // Xirsys returns `url` for single-item entries
-    const urls = s.urls || (s.url ? [s.url] : []);
-    return {
-      urls,
-      username: s.username,
-      credential: s.credential
-    };
-  });
+  // now try to fetch any additional servers (STUN/TURN) from your signaling
+  try {
+    const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
+    if (res.ok) {
+      const { iceServers: fetched } = await res.json();
+      fetched.forEach(s => {
+        const urls = s.urls || (s.url ? [s.url] : []);
+        iceServers.push({
+          urls,
+          username: s.username,
+          credential: s.credential
+        });
+      });
+    } else {
+      console.warn('fetchIceConfig: server returned', res.status);
+    }
+  } catch (e) {
+    console.warn('fetchIceConfig: could not fetch from signaling, using defaults', e);
+  }
+
+  return iceServers;
 }
 
 // Initiate a call to peers in the room
