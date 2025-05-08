@@ -23,7 +23,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: var(--bg);
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
   padding: 20px;
 }
 
