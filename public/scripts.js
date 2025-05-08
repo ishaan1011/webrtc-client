@@ -1004,6 +1004,7 @@ async function setupPeerConnection(offerObj = null) {
   // Relay ICE candidates via signaling server
   state.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
     if (candidate) {
+      console.log('🧊', candidate.candidate);
       socket.emit('sendIceCandidateToSignalingServer', {
         iceCandidate: candidate,
         iceUserName: state.userName,
