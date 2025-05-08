@@ -1305,3 +1305,28 @@ body:not(.light-mode) .input-group .input-group-text {
   /* a slightly darker red on hover */
   background-color: #c82727 !important;
 }
+
+/* Theme‐toggle icon via CSS pseudo‐element */
+#theme-toggle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  width: 2rem;   /* give it space for the emoji */
+  height: 2rem;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  text-align: center;
+}
+
+/* default = dark‐mode icon (sun) */
+#theme-toggle::before {
+  content: "🔆";
+  display: block;
+}
+
+/* when .light-mode is set on html (or body) */
+.light-mode #theme-toggle::before {
+  content: "🌙";
+}

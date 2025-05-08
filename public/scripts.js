@@ -160,12 +160,10 @@ async function init() {
   if (localStorage.getItem('theme') === 'light') {
     document.documentElement.classList.add('light-mode');
   }
-  // set correct icon
-  themeToggle.textContent = document.documentElement.classList.contains('light-mode') ? '🌙' : '🔆';
-  // on click, flip
+
+  // on click, flip the class and persist
   themeToggle.addEventListener('click', () => {
     const isLight = document.documentElement.classList.toggle('light-mode');
-    themeToggle.textContent = isLight ? '🌙' : '🔆';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
   });
 
