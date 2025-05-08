@@ -289,7 +289,6 @@ function displayActiveRooms(rooms) {
       <div class="room-card-info">
         <i class="fas fa-video"></i>
         ${room.roomId}
-        <span>${room.participantCount} participant${room.participantCount !== 1 ? 's' : ''}</span>
       </div>
       <button class="btn btn-sm btn-success room-join-btn">
         <i class="fas fa-sign-in-alt"></i> Join
