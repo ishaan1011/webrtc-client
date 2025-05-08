@@ -1118,13 +1118,5 @@ body.light-mode .landing-container {
 /* -------------------------------------------------- */
 body.light-mode .option-card.active-rooms .room-card {
   /* make the card a very light shade */
-  background-color: var(--card-bg) !important;
-}
-body.light-mode .option-card.active-rooms .room-card:hover {
-  /* slightly darker on hover */
   background-color: var(--bg) !important;
-}
-/* force the “1 participant” text to be dark */
-body.light-mode .option-card.active-rooms .room-card-info span {
-  color: var(--text) !important;
 }
