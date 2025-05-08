@@ -1092,6 +1092,11 @@ function updateLocalMuteUI() {
 // Clean up WebRTC resources
 function cleanup() {
   state.isInCall = false;
+
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
   
   // Close peer connection
   if (state.peerConnection) {
