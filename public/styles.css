@@ -1289,12 +1289,3 @@ body:not(.light-mode) .input-group .input-group-text {
   padding: 0 !important;
   margin-bottom: 0.25rem; /* a bit of breathing room */
 }
-
-/* Optional: give your selects a subtle underline instead of a full box */
-#settings-modal .modal-body .form-select {
-  background: transparent !important;
-  border: none !important;
-  border-bottom: 1px solid var(--subtext) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}

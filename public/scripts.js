@@ -80,7 +80,8 @@ function getDOMElements() {
     audioOutputSelect: document.getElementById('audio-output-select'),
     videoInputSelect: document.getElementById('video-input-select'),
     settingsVideoPreview: document.getElementById('settings-video-preview'),
-    applySettingsBtn: document.getElementById('apply-settings')
+    applySettingsBtn: document.getElementById('apply-settings'),
+    themeSelect: document.getElementById('meeting-theme-select')
   };
 }
 
@@ -167,6 +168,24 @@ async function init() {
     themeToggle.textContent = isLight ? '🌙' : '🔆';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
   });
+
+  if (elements.themeSelect) {
+    // set the initial dropdown value from localStorage
+    const saved = localStorage.getItem('theme') || 'dark';
+    elements.themeSelect.value = saved;
+    
+    // when user picks a theme in the modal…
+    elements.themeSelect.addEventListener('change', e => {
+      const isLight = e.target.value === 'light';
+      // apply to <html> so all your .light-mode rules fire
+      document.documentElement.classList.toggle('light-mode', isLight);
+      // update the floating toggle button icon too
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) themeToggle.textContent = isLight ? '🌙' : '🔆';
+      // remember choice
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  }
 }
 
 // Initialize the signaling connection for a specific room
