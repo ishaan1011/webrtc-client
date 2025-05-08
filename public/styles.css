@@ -999,7 +999,8 @@ body {
 }
 
 /* Light mode overrides */
-body.light-mode {
+html.light-mode,
+.light-mode {
   --bg:            #fff;
   --card-bg:       #f7f7f7;
   --text:          #222;
@@ -1058,15 +1059,15 @@ h1, h3, .tagline, p {
 
 /* Make sure toggling is instantaneous */
 body,
-body.light-mode * {
+.light-mode * {
   transition: background-color .3s;
 }
 
-body.light-mode .option-card {
+.light-mode .option-card {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-body.light-mode .landing-content {
+.light-mode .landing-content {
   border-radius: 16px;
 }
 
@@ -1091,7 +1092,7 @@ body.light-mode .landing-content {
 }
 
 /* when light mode is active, force it white */
-body.light-mode #theme-toggle {
+.light-mode #theme-toggle {
   background: #fff;
   color: #1a1a1a; /* your dark text */
 }
@@ -1108,14 +1109,14 @@ body:not(.light-mode) .input-group .input-group-text {
   border-color: #ccc !important;
 }
 
-body.light-mode .landing-container {
+.light-mode .landing-container {
   background: var(--bg) !important;  /* → #fafafa */
 }
 
 /* -------------------------------------------------- */
 /* Active-Rooms cards: Light-mode background & text */
 /* -------------------------------------------------- */
-body.light-mode .option-card.active-rooms .room-card {
+.light-mode .option-card.active-rooms .room-card {
   /* make the card a very light shade */
   background-color: var(--bg) !important;
 }
@@ -1143,99 +1144,99 @@ body.light-mode .option-card.active-rooms .room-card {
 /* ───────────────────────────────────────────── */
 /* Force meeting-room text/icons to use theme text */
 /* ───────────────────────────────────────────── */
-body.light-mode .zoom-container {
+.light-mode .zoom-container {
   /* default text/icon color for the entire meeting UI */
   color: var(--text) !important;
 }
 
 /* undo any hard-coded light values in key areas */
-body.light-mode .zoom-container .meeting-header .meeting-info,
-body.light-mode .zoom-container .meeting-header .meeting-duration,
-body.light-mode .zoom-container .meeting-header .user-info,
-body.light-mode .zoom-container .meeting-controls .control-button,
-body.light-mode .zoom-container .view-toggle,
-body.light-mode .zoom-container .video-overlay .participant-name {
+.light-mode .zoom-container .meeting-header .meeting-info,
+.light-mode .zoom-container .meeting-header .meeting-duration,
+.light-mode .zoom-container .meeting-header .user-info,
+.light-mode .zoom-container .meeting-controls .control-button,
+.light-mode .zoom-container .view-toggle,
+.light-mode .zoom-container .video-overlay .participant-name {
   color: var(--text) !important;
 }
 
 /* make sure incoming-call text is visible too */
-body.light-mode .zoom-container .incoming-calls,
-body.light-mode .zoom-container .incoming-calls * {
+.light-mode .zoom-container .incoming-calls,
+.light-mode .zoom-container .incoming-calls * {
   color: var(--text) !important;
 }
 
 /* ───────────────────────────────────────────── */
 /* Meeting-room Light-mode overrides            */
 /* ───────────────────────────────────────────── */
-body.light-mode .zoom-container {
+.light-mode .zoom-container {
   background-color: var(--bg) !important;
   color: var(--text) !important;
 }
 
 /* Sidebars (chat + participants) */
-body.light-mode .zoom-container .sidebar {
+.light-mode .zoom-container .sidebar {
   background-color: var(--card-bg) !important;
 }
-body.light-mode .zoom-container .sidebar-header {
+.light-mode .zoom-container .sidebar-header {
   background-color: var(--card-bg) !important;
   color: var(--text) !important;
 }
-body.light-mode .zoom-container .sidebar h5,
-body.light-mode .zoom-container .participant-name {
+.light-mode .zoom-container .sidebar h5,
+.light-mode .zoom-container .participant-name {
   color: var(--text) !important;
 }
 
 /* Chat messages */
-body.light-mode .zoom-container .chat-message.from-other {
+.light-mode .zoom-container .chat-message.from-other {
   background-color: #e0e0e0 !important;
   color: #000 !important;
 }
-body.light-mode .zoom-container .chat-message.from-me {
+.light-mode .zoom-container .chat-message.from-me {
   background-color: var(--accent) !important;
   color: #fff !important;
 }
 
 /* Chat input field */
-body.light-mode .zoom-container .chat-input {
+.light-mode .zoom-container .chat-input {
   background-color: #fff !important;
   color: #000 !important;
   border: 1px solid #ccc !important;
 }
 
 /* Video overlay bars (participant names & statuses) */
-body.light-mode .zoom-container .video-overlay {
+.light-mode .zoom-container .video-overlay {
   background: rgba(255,255,255,0.6) !important;
 }
-body.light-mode .zoom-container .video-overlay .participant-name,
-body.light-mode .zoom-container .video-overlay .connection-status i {
+.light-mode .zoom-container .video-overlay .participant-name,
+.light-mode .zoom-container .video-overlay .connection-status i {
   color: var(--text) !important;
 }
 
 /* Bottom toolbar buttons */
-body.light-mode .zoom-container .control-button {
+.light-mode .zoom-container .control-button {
   background-color: var(--card-bg) !important;
   color: var(--text) !important;
 }
-body.light-mode .zoom-container .control-button:hover {
+.light-mode .zoom-container .control-button:hover {
   background-color: var(--bg) !important;
 }
 
 /* Gallery/Speaker toggle */
-body.light-mode .zoom-container .view-toggle {
+.light-mode .zoom-container .view-toggle {
   background-color: var(--card-bg) !important;
   color: var(--text) !important;
 }
-body.light-mode .zoom-container .view-toggle:hover {
+.light-mode .zoom-container .view-toggle:hover {
   background-color: var(--bg) !important;
 }
 
 /* ───────────────────────────────────────────── */
 /* Sidebar “X” close-button: light-mode styling */
 /* ───────────────────────────────────────────── */
-body.light-mode .zoom-container .close-sidebar {
+.light-mode .zoom-container .close-sidebar {
   color: var(--text) !important;
 }
 
-body.light-mode .zoom-container .close-sidebar:hover {
+.light-mode .zoom-container .close-sidebar:hover {
   color: var(--accent) !important;
 }
