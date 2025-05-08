@@ -1343,3 +1343,13 @@ body:not(.light-mode) .input-group .input-group-text {
   /* tighten top gap above the video preview */
   margin-top: 1rem !important;
 }
+
+/* ───────────────────────────────────────── */
+/* Uniform heading margins in all option-cards */
+/* ───────────────────────────────────────── */
+.option-card h3 {
+  /* zero out any default top margin */
+  margin-top: 0;
+  /* match the gap you like—tweak 1rem as desired */
+  margin-bottom: 1rem;
+}
