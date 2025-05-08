@@ -1240,3 +1240,41 @@ body:not(.light-mode) .input-group .input-group-text {
 .light-mode .zoom-container .close-sidebar:hover {
   color: var(--accent) !important;
 }
+
+/* ───────────────────────────────────────────── */
+/* Theme-aware styling for the Settings modal   */
+/* ───────────────────────────────────────────── */
+#settings-modal .modal-content {
+  /* card-bg is #333 in dark, #f7f7f7 in light */
+  background-color: var(--card-bg) !important;
+  /* text is #fff in dark, #222 in light */
+  color: var(--text) !important;
+  border: 1px solid var(--btn-primary-h) !important;
+}
+
+#settings-modal .modal-header,
+#settings-modal .modal-body,
+#settings-modal .modal-footer {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+
+#settings-modal .modal-header .modal-title,
+#settings-modal .modal-footer .btn-close {
+  color: var(--text) !important;
+}
+
+#settings-modal .btn-close {
+  opacity: 0.8;
+}
+#settings-modal .btn-close:hover {
+  opacity: 1;
+}
+
+/* Adjust form fields inside the modal */
+#settings-modal .form-select,
+#settings-modal .form-label {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+  border: 1px solid #ccc !important;
+}
