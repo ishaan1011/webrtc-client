@@ -1139,3 +1139,27 @@ body.light-mode .option-card.active-rooms .room-card {
   max-width: 600px;
   width: 75%;
 }
+
+/* ───────────────────────────────────────────── */
+/* Force meeting-room text/icons to use theme text */
+/* ───────────────────────────────────────────── */
+body.light-mode .zoom-container {
+  /* default text/icon color for the entire meeting UI */
+  color: var(--text) !important;
+}
+
+/* undo any hard-coded light values in key areas */
+body.light-mode .zoom-container .meeting-header .meeting-info,
+body.light-mode .zoom-container .meeting-header .meeting-duration,
+body.light-mode .zoom-container .meeting-header .user-info,
+body.light-mode .zoom-container .meeting-controls .control-button,
+body.light-mode .zoom-container .view-toggle,
+body.light-mode .zoom-container .video-overlay .participant-name {
+  color: var(--text) !important;
+}
+
+/* make sure incoming-call text is visible too */
+body.light-mode .zoom-container .incoming-calls,
+body.light-mode .zoom-container .incoming-calls * {
+  color: var(--text) !important;
+}
