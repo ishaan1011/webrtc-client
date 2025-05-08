@@ -1358,18 +1358,3 @@ body:not(.light-mode) .input-group .input-group-text {
 #remote-video-wrapper .audio-badge {
   display: none;
 }
-
-/* ───────────────────────────────────────────── */
-/* Solid sidebars using theme variables         */
-/* ───────────────────────────────────────────── */
-/* In dark-mode (default), use --card-bg as a solid panel */
-body:not(.light-mode) .zoom-container .sidebar {
-  background-color: var(--card-bg) !important;
-  backdrop-filter: none !important;
-}
-
-/* And same for the header strip */
-body:not(.light-mode) .zoom-container .sidebar-header {
-  background-color: var(--card-bg) !important;
-  backdrop-filter: none !important;
-}
