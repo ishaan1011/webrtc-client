@@ -989,8 +989,8 @@ body {
 /*   LIGHT / DARK THEME VARS  */
 /* ========================== */
 :root {
-  --bg:            #302e2e;
-  --card-bg:       rgba(51,51,51,0.8);
+  --bg:            #292929d3;
+  --card-bg:       #333333cc;
   --text:          #fff;
   --subtext:       #aaa;
   --accent:        #4caf50;
