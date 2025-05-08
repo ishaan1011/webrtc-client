@@ -258,6 +258,7 @@ function showMeetingView() {
   if (state.localStream) {
     elements.localVideo.srcObject = state.localStream;
   }
+  updateLocalMuteUI();
 }
 
 // Start the meeting timer
@@ -984,10 +985,25 @@ async function setupPeerConnection(offerObj = null) {
   });
 
   // Handle incoming audio/video tracks
-  state.peerConnection.addEventListener('track', ({ streams: [stream] }) => {
-    // Add the remote tracks to our remote stream
-    stream.getTracks().forEach(track => state.remoteStream.addTrack(track));
-    
+  state.peerConnection.addEventListener('track', ({ streams: [stream], track }) => {
+    // Add this single track to our remoteStream
+    state.remoteStream.addTrack(track);
+
+    // If this is the remote audio track, show/update its badge
+    if (track.kind === 'audio') {
+      const remoteBadge = document.querySelector('#remote-video-wrapper .audio-badge');
+      if (remoteBadge) {
+        // unhide it
+        remoteBadge.style.display = 'flex';
+        // choose the right icon
+        remoteBadge.innerHTML = track.enabled
+          ? '<i class="fas fa-microphone"></i>'
+          : '<i class="fas fa-microphone-slash"></i>';
+        // toggle the muted class for red/green styling
+        remoteBadge.classList.toggle('muted', !track.enabled);
+      }
+    }
+
     // Update remote participant name
     const remoteParticipantName = document.getElementById('remote-participant-name');
     if (remoteParticipantName) {
@@ -995,6 +1011,7 @@ async function setupPeerConnection(offerObj = null) {
       remoteParticipantName.textContent = remoteName || 'Remote Participant';
     }
   });
+
 
   // If answering an offer, set remote description
   if (offerObj && offerObj.offer) {
@@ -1012,6 +1029,30 @@ async function addNewIceCandidate(candidate) {
     }
   } else {
     console.warn('⚠️ Received ICE candidate but no peerConnection exists yet');
+  }
+}
+
+function updateLocalMuteUI() {
+  const audioTrack = state.localStream?.getAudioTracks()[0];
+  if (!audioTrack) return;
+
+  // isMuted = true when track.enabled === false
+  state.isMuted = !audioTrack.enabled;
+
+  // update the toolbar button
+  if (elements.toggleAudio) {
+    elements.toggleAudio.innerHTML = state.isMuted
+      ? '<i class="fas fa-microphone-slash"></i><span class="control-label">Unmute</span>'
+      : '<i class="fas fa-microphone"></i><span class="control-label">Mute</span>';
+  }
+
+  // update the badge on your self–video
+  const badge = document.querySelector('#self-video-wrapper .audio-badge');
+  if (badge) {
+    badge.innerHTML = state.isMuted
+      ? '<i class="fas fa-microphone-slash"></i>'
+      : '<i class="fas fa-microphone"></i>';
+    badge.classList.toggle('muted', state.isMuted);
   }
 }
 

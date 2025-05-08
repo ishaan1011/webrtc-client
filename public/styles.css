@@ -1353,3 +1353,8 @@ body:not(.light-mode) .input-group .input-group-text {
   /* match the gap you like—tweak 1rem as desired */
   margin-bottom: 1rem;
 }
+
+/* hide remote badge by default */
+#remote-video-wrapper .audio-badge {
+  display: none;
+}
