@@ -1112,3 +1112,19 @@ body:not(.light-mode) .input-group .input-group-text {
 body.light-mode .landing-container {
   background: var(--bg) !important;  /* → #fafafa */
 }
+
+/* -------------------------------------------------- */
+/* Active-Rooms cards: Light-mode background & text */
+/* -------------------------------------------------- */
+body.light-mode .option-card.active-rooms .room-card {
+  /* make the card a very light shade */
+  background-color: var(--card-bg) !important;
+}
+body.light-mode .option-card.active-rooms .room-card:hover {
+  /* slightly darker on hover */
+  background-color: var(--bg) !important;
+}
+/* force the “1 participant” text to be dark */
+body.light-mode .option-card.active-rooms .room-card-info span {
+  color: var(--text) !important;
+}
