@@ -852,6 +852,21 @@ async function fetchIceConfig() {
           credential: s.credential
         });
       });
+
+      // ── normalize any ws-turn3.xirsys.com → global.xirsys.net ──
+      iceServers.forEach(server => {
+        if (Array.isArray(server.urls)) {
+          server.urls = server.urls.map(u =>
+            u.replace(/ws-turn3\.xirsys\.com/g, 'global.xirsys.net')
+          );
+        } else if (typeof server.urls === 'string') {
+          server.urls = server.urls.replace(
+            /ws-turn3\.xirsys\.com/g,
+            'global.xirsys.net'
+          );
+        }
+      });
+      
       console.log('[🧊] fetchIceConfig → final iceServers', iceServers);
     } else {
       console.warn('fetchIceConfig: server returned', res.status);
