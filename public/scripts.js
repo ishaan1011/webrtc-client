@@ -972,19 +972,8 @@ async function addAnswer(offerObj) {
 
 // Setup WebRTC peer connection
 async function setupPeerConnection(offerObj = null) {
-  // 1️⃣ Statically define your ICE servers, falling back to STUN + TURN  
-  //    (you can still fetch dynamic ones via your /ice endpoint if you like)
-  const iceServers = [
-    { urls: 'stun:stun.l.google.com:19302' },
-    {
-      urls: [
-        'turn:your.turn.server:3478?transport=udp',
-        'turn:your.turn.server:3478?transport=tcp'
-      ],
-      username: 'TURN_USERNAME',
-      credential: 'TURN_CREDENTIAL'
-    }
-  ];
+  // 1️⃣ Dynamically fetch STUN/TURN from our /ice endpoint
+  const iceServers = await fetchIceConfig();
 
   // 2️⃣ Add a small pool so candidates are gathered early,
   //    and bundle all tracks on one transport to reduce latency.
