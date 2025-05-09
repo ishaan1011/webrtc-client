@@ -993,16 +993,15 @@ async function setupPeerConnection(offerObj = null) {
   state.peerConnection.addEventListener('icegatheringstatechange', () => {
     console.log('[🔄] ICE gatheringState:', state.peerConnection.iceGatheringState);
   });
-  state.peerConnection.addEventListener('iceconnectionstatechange', () => {
-    console.log('[🔗] ICE connectionState:', state.peerConnection.iceConnectionState);
-    if (state.peerConnection.iceConnectionState === 'failed') {
-      // Log which candidate-pairs were tried and why none succeeded
-      state.peerConnection.getStats().then(stats => {
-        stats.forEach(report => {
-          if (report.type === 'candidate-pair') {
-            console.log('[📊] candidate-pair:', report);
-          }
-        });
+  state.peerConnection.addEventListener('iceconnectionstatechange', async () => {
+    const cs = state.peerConnection.iceConnectionState;
+    console.log('[🔗] ICE connectionState:', cs);
+    if (cs === 'failed') {
+      const stats = await state.peerConnection.getStats();
+      stats.forEach(r => {
+        if (r.type === 'candidate-pair') {
+          console.log('[📊] candidate-pair:', r);
+        }
       });
     }
   });
@@ -1176,36 +1175,36 @@ function cleanup() {
 
 // Simple direct event listeners for the landing page buttons
 window.onload = function() {
-  console.log('Window loaded - setting up essential buttons');
+  // console.log('Window loaded - setting up essential buttons');
   
-  // Direct handlers for the most important buttons
-  const createRoomBtn = document.getElementById('create-room');
-  const joinRoomBtn = document.getElementById('join-room');
-  const roomIdInput = document.getElementById('room-id-input');
+  // // Direct handlers for the most important buttons
+  // const createRoomBtn = document.getElementById('create-room');
+  // const joinRoomBtn = document.getElementById('join-room');
+  // const roomIdInput = document.getElementById('room-id-input');
   
-  if (createRoomBtn) {
-    console.log('Found create room button, adding direct click handler');
-    createRoomBtn.onclick = function() {
-      console.log('Create room clicked');
-      createRoom();
-    };
-  }
+  // if (createRoomBtn) {
+  //   console.log('Found create room button, adding direct click handler');
+  //   createRoomBtn.onclick = function() {
+  //     console.log('Create room clicked');
+  //     createRoom();
+  //   };
+  // }
   
-  if (joinRoomBtn) {
-    console.log('Found join room button, adding direct click handler');
-    joinRoomBtn.onclick = function() {
-      console.log('Join room clicked');
-      joinRoom();
-    };
-  }
+  // if (joinRoomBtn) {
+  //   console.log('Found join room button, adding direct click handler');
+  //   joinRoomBtn.onclick = function() {
+  //     console.log('Join room clicked');
+  //     joinRoom();
+  //   };
+  // }
   
-  if (roomIdInput) {
-    roomIdInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        joinRoom();
-      }
-    });
-  }
+  // if (roomIdInput) {
+  //   roomIdInput.addEventListener('keypress', function(e) {
+  //     if (e.key === 'Enter') {
+  //       joinRoom();
+  //     }
+  //   });
+  // }
   
   // Start normal initialization
   init();
