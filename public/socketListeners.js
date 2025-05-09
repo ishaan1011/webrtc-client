@@ -13,8 +13,11 @@ export function initSocketListeners(
   socket,
   { answerOffer, addAnswer, addNewIceCandidate }
 ) {
+  console.log('[🎬] initSocketListeners firing, socket.id=', socket.id);
+
   // Utility to render "Answer" buttons
   function createOfferEls(offers) {
+    console.log('[📥] createOfferEls — offers:', offers);
     const container = document.getElementById('answer');
     if (!container) return;
     container.innerHTML = '';
@@ -29,32 +32,37 @@ export function initSocketListeners(
   }
 
   // Log and handle connection lifecycle
-  socket.on('connect', () => console.log('📶 Connected to signaling server'));
-  socket.on('disconnect', () => console.warn('🚫 Disconnected from signaling server'));
+  socket.on('connect', () => {
+    console.log(`[📶] Connected to signaling server — id=${socket.id}`);
+  });
+  socket.on('disconnect', reason => {
+    console.warn('[🚫] Disconnected from signaling server — reason:', reason);
+  });
 
   // Handle available/pending offers
   socket.on('availableOffers', offers => {
-    console.log('📥 availableOffers', offers);
+    console.log('[📥] availableOffers — got', offers.length, 'offers', offers);
     createOfferEls(offers);
   });
   socket.on('newOfferAwaiting', offers => {
-    console.log('📥 newOfferAwaiting', offers);
+    console.log('[📥] newOfferAwaiting — got', offers.length, 'offers', offers);
     createOfferEls(offers);
   });
 
   // Handle answer exchange
   socket.on('answerResponse', offerObj => {
-    console.log('📤 answerResponse', offerObj);
+    console.log('[📤] answerResponse — offerObj.offererUserName=', offerObj.offererUserName, offerObj);
     addAnswer(offerObj);
   });
 
   // Handle ICE candidates from server
   socket.on('receivedIceCandidateFromServer', candidate => {
-    console.log('🌐 receivedIceCandidateFromServer', candidate);
+    console.log('[🌐] receivedIceCandidateFromServer — candidate:', candidate);
     addNewIceCandidate(candidate);
   });
 
   socket.on('hangup', () => {
+    console.log('[🔴] hangup event received');
     console.log('🔴 Remote peer hung up');
     cleanup();
     // Re-enable the Call button in case it was disabled

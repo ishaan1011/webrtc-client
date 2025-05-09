@@ -863,6 +863,7 @@ async function fetchIceConfig() {
 
 // Initiate a call to peers in the room
 async function initiateCall() {
+  console.log('[📞] initiateCall() — current state:', { didIOffer: state.didIOffer, isInCall: state.isInCall });
   if (state.peerConnection) {
     console.warn('⚠️ Call already in progress');
     return;
@@ -880,9 +881,12 @@ async function initiateCall() {
     await setupPeerConnection();
     
     // Create and send offer
+    console.log('[📝] createOffer()');
     const offer = await state.peerConnection.createOffer();
+    console.log('[📝] setLocalDescription(offer)', offer);
     await state.peerConnection.setLocalDescription(offer);
     state.didIOffer = true;
+    console.log('[✈️] emitting newOffer', offer);
     socket.emit('newOffer', offer);
     
     // Update UI
@@ -898,28 +902,44 @@ async function initiateCall() {
 
 // Answer an incoming call offer
 async function answerOffer(offerObj) {
+  console.log('[📩] answerOffer() — incoming offerObj:', offerObj);
   try {
+    console.log('[🔄] Setting state.isInCall = true');
     state.isInCall = true;
     
     // Make sure we have local media
     if (!state.localStream) {
+      console.log('[🛠] No localStream yet — calling setupDevices()');
       await setupDevices();
+      console.log('[🎥] setupDevices() completed, localStream tracks:', state.localStream.getTracks().map(t => t.kind));
     }
     
     // Setup peer connection with the offer
+    console.log('[🛠] Calling setupPeerConnection with offerObj:', offerObj);
     await setupPeerConnection(offerObj);
+    console.log('[🛠] setupPeerConnection() done, pc:', state.peerConnection);
     
     // Create and send answer
+    console.log('[📝] Creating answer');
     const answer = await state.peerConnection.createAnswer();
+    console.log('[📝] Answer created:', answer);
+
+    console.log('[📝] Setting local description to answer');
     await state.peerConnection.setLocalDescription(answer);
+    console.log('[📄] Local description is now:', state.peerConnection.localDescription);
+
     offerObj.answer = state.peerConnection.localDescription;
+    console.log('[✉️] offerObj.answer attached — sending via socket.emitWithAck("newAnswer")');
     
     // Send answer and get saved ICE candidates
     const savedIce = await socket.emitWithAck('newAnswer', offerObj);
+    console.log('[📦] Received saved ICE candidates from server:', savedIce);
     
     // Add any ICE candidates that were collected before answer
     for (const c of savedIce) {
+      console.log('[➕] Adding pre-answer ICE candidate:', c);
       await state.peerConnection.addIceCandidate(c);
+      console.log('[✅] ICE candidate added successfully');
     }
     
     // Update UI
@@ -975,7 +995,16 @@ async function setupPeerConnection(offerObj = null) {
     rtcpMuxPolicy: 'require'      // force RTCP mux (fewer sockets)
   };
 
+  console.log('[🛠] setupPeerConnection — config:', { iceServers, iceCandidatePoolSize:5, bundlePolicy:'max-bundle', rtcpMuxPolicy:'require' });
+
   state.peerConnection = new RTCPeerConnection(pcConfig);
+
+  state.peerConnection.addEventListener('icegatheringstatechange', () => {
+    console.log('[🔄] ICE gatheringState:', state.peerConnection.iceGatheringState);
+  });
+  state.peerConnection.addEventListener('iceconnectionstatechange', () => {
+    console.log('[🔗] ICE connectionState:', state.peerConnection.iceConnectionState);
+  });
 
   // 3️⃣ Optional: cap your send bitrate right away
   state.peerConnection.addEventListener('negotiationneeded', async () => {
@@ -996,6 +1025,7 @@ async function setupPeerConnection(offerObj = null) {
   // Send local tracks to peer
   if (state.localStream) {
     state.localStream.getTracks().forEach(track => {
+      console.log('[🎤📹] adding local track to PeerConnection:', track.kind, track);
       state.peerConnection.addTrack(track, state.localStream);
     });
   }
@@ -1004,18 +1034,20 @@ async function setupPeerConnection(offerObj = null) {
   // Relay ICE candidates via signaling server
   state.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
     if (candidate) {
-      console.log('🧊', candidate.candidate);
+      console.log('[🧊] ICE candidate generated:', candidate.candidate);
       socket.emit('sendIceCandidateToSignalingServer', {
         iceCandidate: candidate,
         iceUserName: state.userName,
         didIOffer: state.didIOffer
       });
+    } else {
+      console.log('[✅] ICE gathering complete (null candidate)');
     }
   });
 
   // Handle connection state changes
   state.peerConnection.addEventListener('connectionstatechange', () => {
-    console.log('Connection state:', state.peerConnection.connectionState);
+    console.log('[🔗] PeerConnection.connectionState:', state.peerConnection.connectionState);
     
     // Update connection status indicator
     const connectionStatus = document.querySelector('#self-video-wrapper .connection-status i');
@@ -1032,6 +1064,7 @@ async function setupPeerConnection(offerObj = null) {
 
   // Handle incoming audio/video tracks
   state.peerConnection.addEventListener('track', ({ streams: [stream], track }) => {
+    console.log('[📥] ontrack:', track.kind, '— adding to remoteStream');
     // Add this single track to our remoteStream
     state.remoteStream.addTrack(track);
 
@@ -1061,20 +1094,23 @@ async function setupPeerConnection(offerObj = null) {
 
   // If answering an offer, set remote description
   if (offerObj && offerObj.offer) {
+    console.log('[⏪] setting remote description from offerObj:', offerObj.offer);
     await state.peerConnection.setRemoteDescription(offerObj.offer);
   }
 }
 
 // Add an ICE candidate received from the signaling server
 async function addNewIceCandidate(candidate) {
+  console.log('[➕] addNewIceCandidate() called with candidate:', candidate);
   if (state.peerConnection) {
     try {
       await state.peerConnection.addIceCandidate(candidate);
+      console.log('[✅] addIceCandidate succeeded');
     } catch (err) {
-      console.error('Error adding ICE candidate:', err);
+      console.error('[❌] addIceCandidate failed:', err, candidate);
     }
   } else {
-    console.warn('⚠️ Received ICE candidate but no peerConnection exists yet');
+    console.warn('[⚠️] ICE candidate dropped — no peerConnection:', candidate);
   }
 }
 
