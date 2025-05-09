@@ -995,6 +995,16 @@ async function setupPeerConnection(offerObj = null) {
   });
   state.peerConnection.addEventListener('iceconnectionstatechange', () => {
     console.log('[🔗] ICE connectionState:', state.peerConnection.iceConnectionState);
+    if (state.peerConnection.iceConnectionState === 'failed') {
+      // Log which candidate-pairs were tried and why none succeeded
+      state.peerConnection.getStats().then(stats => {
+        stats.forEach(report => {
+          if (report.type === 'candidate-pair') {
+            console.log('[📊] candidate-pair:', report);
+          }
+        });
+      });
+    }
   });
 
   // 3️⃣ Optional: cap your send bitrate right away
