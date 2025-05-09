@@ -834,15 +834,16 @@ function showMessage(message, type = 'system') {
 // Fetch ICE server configuration from signaling server
 async function fetchIceConfig() {
   // build up our list starting with a public STUN
-  const iceServers = [
-    { urls: 'stun:stun.l.google.com:19302' }
-  ];
+  const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+  console.log('[🧊] fetchIceConfig → fetching ICE from', `${SIGNALING_SERVER_URL}/ice`);
 
   // now try to fetch any additional servers (STUN/TURN) from your signaling
   try {
     const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
     if (res.ok) {
+      console.log('[🧊] fetchIceConfig → response OK');
       const { iceServers: fetched } = await res.json();
+      console.log('[🧊] fetchIceConfig → fetched', fetched);
       fetched.forEach(s => {
         const urls = s.urls || (s.url ? [s.url] : []);
         iceServers.push({
@@ -851,11 +852,12 @@ async function fetchIceConfig() {
           credential: s.credential
         });
       });
+      console.log('[🧊] fetchIceConfig → final iceServers', iceServers);
     } else {
       console.warn('fetchIceConfig: server returned', res.status);
     }
   } catch (e) {
-    console.warn('fetchIceConfig: could not fetch from signaling, using defaults', e);
+    console.warn('[⚠️] fetchIceConfig: failed, using default STUN only', e);
   }
 
   return iceServers;
