@@ -995,7 +995,8 @@ async function setupPeerConnection(offerObj = null) {
   // 2️⃣ Add a small pool so candidates are gathered early,
   //    and bundle all tracks on one transport to reduce latency.
   const pcConfig = {
-    iceServers,
+    iceServers: await fetchIceConfig(),
+    iceTransportPolicy: 'relay',
     iceCandidatePoolSize: 5,      // gathers candidates up front
     bundlePolicy: 'max-bundle',   // bundle audio+video on one 5‑tuple
     rtcpMuxPolicy: 'require'      // force RTCP mux (fewer sockets)
@@ -1003,6 +1004,7 @@ async function setupPeerConnection(offerObj = null) {
 
   console.log('[🛠] setupPeerConnection — config:', { iceServers, iceCandidatePoolSize:5, bundlePolicy:'max-bundle', rtcpMuxPolicy:'require' });
 
+  console.log('🧊 PC config.iceServers:', pcConfig.iceServers);
   state.peerConnection = new RTCPeerConnection(pcConfig);
 
   state.peerConnection.addEventListener('icegatheringstatechange', () => {
