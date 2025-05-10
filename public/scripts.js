@@ -16,6 +16,7 @@ const state = {
   isMuted: false,
   isVideoOff: false,
   isInCall: false,
+  pendingRemoteCandidates: [],
   meetingStartTime: null,
   availableDevices: {
     audioInput: [],
@@ -966,6 +967,21 @@ async function addAnswer(offerObj) {
     await state.peerConnection.setRemoteDescription(offerObj.answer);
     console.log('📞 Call connected (answer received)');
     showMessage('Call connected', 'system');
+
+    // ── Flush any queued ICE candidates
+    if (state.pendingRemoteCandidates.length) {
+      console.log(`[🚀] flushing ${state.pendingRemoteCandidates.length} queued candidates`);
+      for (const c of state.pendingRemoteCandidates) {
+        try {
+          await state.peerConnection.addIceCandidate(new RTCIceCandidate(c));
+          console.log('[✅] queued candidate added:', c);
+        } catch (e) {
+          console.error('[❌] queued addIceCandidate failed:', e, c);
+        }
+      }
+      state.pendingRemoteCandidates = [];
+    }
+
   } catch (err) {
     console.error('Error adding answer:', err);
   }
@@ -1118,15 +1134,24 @@ async function setupPeerConnection(offerObj = null) {
 // Add an ICE candidate received from the signaling server
 async function addNewIceCandidate(candidate) {
   console.log('[➕] addNewIceCandidate() called with candidate:', candidate);
-  if (state.peerConnection) {
-    try {
-      await state.peerConnection.addIceCandidate(candidate);
-      console.log('[✅] addIceCandidate succeeded');
-    } catch (err) {
-      console.error('[❌] addIceCandidate failed:', err, candidate);
-    }
-  } else {
+  const pc = state.peerConnection;
+  if (!pc) {
     console.warn('[⚠️] ICE candidate dropped — no peerConnection:', candidate);
+    return;
+  }
+
+  // If remoteDescription isn't set, queue the candidate
+  if (!pc.remoteDescription || !pc.remoteDescription.type) {
+    console.log('[⏳] remoteDescription not set yet, queueing candidate');
+    state.pendingRemoteCandidates.push(candidate);
+    return;
+  }
+
+  try {
+    await state.peerConnection.addIceCandidate(candidate);
+    console.log('[✅] addIceCandidate succeeded');
+  } catch (err) {
+    console.error('[❌] addIceCandidate failed:', err, candidate);
   }
 }
 
