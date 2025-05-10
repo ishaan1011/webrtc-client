@@ -1011,7 +1011,7 @@ async function setupPeerConnection(offerObj = null) {
   state.peerConnection.addEventListener('iceconnectionstatechange', async () => {
     const cs = state.peerConnection.iceConnectionState;
     console.log('[🔗] ICE connectionState:', cs);
-    if (cs === 'failed') {
+    if (cs === 'failed' || cs === 'disconnected') {
       const stats = await state.peerConnection.getStats();
       stats.forEach(r => {
         if (r.type === 'candidate-pair') {
