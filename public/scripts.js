@@ -1021,6 +1021,25 @@ async function setupPeerConnection(offerObj = null) {
     }
   });
 
+  // ALSO watch the PeerConnection.connectionState so we catch the "failed" you saw
+  state.peerConnection.addEventListener('connectionstatechange', async () => {
+    const pcState = state.peerConnection.connectionState;
+    console.log('[🔗] PeerConnection.connectionState:', pcState);
+    if (pcState === 'failed' || pcState === 'disconnected') {
+      try {
+        const stats = await state.peerConnection.getStats();
+        stats.forEach(report => {
+          if (report.type === 'candidate-pair') {
+            console.log('[📊] candidate-pair:', report);
+          }
+        });
+      } catch (err) {
+        console.warn('[❌] getStats failed:', err);
+      }
+    }
+  });
+
+
   // 3️⃣ Optional: cap your send bitrate right away
   state.peerConnection.addEventListener('negotiationneeded', async () => {
     const sender = state.peerConnection.getSenders()
