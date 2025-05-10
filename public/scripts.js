@@ -131,24 +131,6 @@ async function init() {
     await setupDevices();
     startPreview();
     
-    // // Add direct click handler to button elements
-    // // This is a failsafe in case the other listeners don't work
-    // document.querySelectorAll('button').forEach(btn => {
-    //   const id = btn.id;
-    //   console.log(`Found button with ID: ${id}`);
-    //   if (id === 'create-room') {
-    //     btn.onclick = function() {
-    //       console.log('Create room clicked (direct handler)');
-    //       createRoom();
-    //     };
-    //   } else if (id === 'join-room') {
-    //     btn.onclick = function() {
-    //       console.log('Join room clicked (direct handler)');
-    //       joinRoom();
-    //     };
-    //   }
-    // });
-    
     console.log('Application initialized successfully');
   } catch (error) {
     console.error('Error initializing application:', error);
