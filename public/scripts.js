@@ -1,5 +1,5 @@
 /**
- * Comm360 - WebRTC video conferencing with room support
+ * Comm360 - WebRTC video conferencing
  * Enhanced from original WebRTC implementation
  */
 
