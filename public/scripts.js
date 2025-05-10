@@ -1056,7 +1056,11 @@ async function setupPeerConnection(offerObj = null) {
 
   // Prepare remote stream
   state.remoteStream = new MediaStream();
-  if (elements.remoteVideo) elements.remoteVideo.srcObject = state.remoteStream;
+  if (elements.remoteVideo) {
+    elements.remoteVideo.srcObject = state.remoteStream;
+    elements.remoteVideo.autoplay = true;
+    elements.remoteVideo.playsInline = true;
+  }
 
   // Send local tracks to peer
   if (state.localStream) {
@@ -1099,6 +1103,12 @@ async function setupPeerConnection(offerObj = null) {
     console.log('[📥] ontrack:', track.kind, '— adding to remoteStream');
     // Add this single track to our remoteStream
     state.remoteStream.addTrack(track);
+    if (elements.remoteVideo && elements.remoteVideo.srcObject !== state.remoteStream) {
+      elements.remoteVideo.srcObject = state.remoteStream;
+    }
+    elements.remoteVideo.play().catch(() => {
+      console.warn('Remote video play() was blocked; user interaction may be required');
+    });
 
     // If this is the remote audio track, show/update its badge
     if (track.kind === 'audio') {
