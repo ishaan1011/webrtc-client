@@ -697,11 +697,13 @@ function setupSocketListeners() {
     }
   });
   
-  socket.on('receivedIceCandidateFromServer', async candidate => {
+  // ── Listen for trickled ICE from remote peer ──
+  socket.on('newIceCandidate', async ({ candidate }) => {
+    console.log('[🌐] received trickle candidate:', candidate);
     try {
       await addNewIceCandidate(candidate);
     } catch (e) {
-      console.error('Error adding ICE candidate:', e);
+      console.error('❌ addIceCandidate failed:', e, candidate);
     }
   });
   
@@ -1067,17 +1069,13 @@ async function setupPeerConnection(offerObj = null) {
   }
 
 
-  // Relay ICE candidates via signaling server
+  // ── TRICKLE ICE: send every candidate immediately ──
   state.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
     if (candidate) {
-      console.log('[🧊] ICE candidate generated:', candidate.candidate);
-      socket.emit('sendIceCandidateToSignalingServer', {
-        iceCandidate: candidate,
-        iceUserName: state.userName,
-        didIOffer: state.didIOffer
-      });
+      console.log('[💧] trickle candidate:', candidate);
+      socket.emit('newIceCandidate', { candidate });
     } else {
-      console.log('[✅] ICE gathering complete (null candidate)');
+      console.log('[✅] all candidates have been sent');
     }
   });
 
