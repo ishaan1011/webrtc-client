@@ -834,18 +834,7 @@ function showMessage(message, type = 'system') {
 async function fetchIceConfig() {
   const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
   if (!res.ok) throw new Error('Failed to fetch ICE config');
-  const { iceServers } = await res.json();
-
-  // Normalize each entry so it has a `urls` field
-  return iceServers.map(s => {
-    // Xirsys returns `url` for single-item entries
-    const urls = s.urls || (s.url ? [s.url] : []);
-    return {
-      urls,
-      username: s.username,
-      credential: s.credential
-    };
-  });
+  return (await res.json()).iceServers;
 }
 
 // Initiate a call to peers in the room
@@ -944,6 +933,24 @@ async function setupPeerConnection(offerObj = null) {
   
   // Create peer connection
   state.peerConnection = new RTCPeerConnection({ iceServers });
+
+  // ── Diagnostics: log candidate types ──────────────────────────────
+  state.peerConnection.addEventListener('icecandidate', e => {
+    if (e.candidate) {
+      console.log('[ICE]', e.candidate.type, e.candidate.candidate);
+    } else {
+      // Gathering finished – did we get at least one relay?
+      state.peerConnection.getStats().then(stats => {
+        const relays = [...stats.values()]
+          .filter(s => s.type === 'remote-candidate' && s.candidateType === 'relay');
+        if (!relays.length) {
+          console.warn('⚠️  No TURN relay candidates gathered!');
+        }
+      });
+    }
+  });
+  // ─────────────────────────────────────────────────────────────────
+
 
   // Prepare remote stream
   state.remoteStream = new MediaStream();
