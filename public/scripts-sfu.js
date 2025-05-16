@@ -1,5 +1,5 @@
-import * as mediasoupClient from 'mediasoup-client';
-import io from 'socket.io-client';
+import * as mediasoupClient from 'https://cdn.skypack.dev/mediasoup-client';
+import { io } from 'https://cdn.skypack.dev/socket.io-client';
 
 const socket = io('https://comm360-sfu.fly.dev');
 
