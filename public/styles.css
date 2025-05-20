@@ -1361,6 +1361,7 @@ body:not(.light-mode) .input-group .input-group-text {
 
 /* ─── Recordings “reels” feed ───────────────────────────────── */
 #recordings-feed {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;

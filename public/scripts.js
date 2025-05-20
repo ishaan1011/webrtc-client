@@ -277,7 +277,6 @@ async function loadRecordings() {
   const feed = document.getElementById('recordings-feed');
   if (!feed) return;
   feed.innerHTML = '';
-  feed.style.display = 'block';
 
   // 1) get all session IDs
   const res = await fetch(`${SIGNALING_SERVER_URL}/recordings`);
@@ -285,6 +284,7 @@ async function loadRecordings() {
   const { sessions } = await res.json();
 
   // 2) for each, fetch metadata and filter by this roomId
+  let count = 0;
   for (const sessionId of sessions) {
     const metaRes = await fetch(
       `${SIGNALING_SERVER_URL}/recordings/${sessionId}/metadata.json`
@@ -292,6 +292,12 @@ async function loadRecordings() {
     if (!metaRes.ok) continue;
     const meta = await metaRes.json();
     if (meta.roomId !== state.roomId) continue;
+
+    // on first match, show the feed
+    if (count === 0) {
+      feed.style.display = 'block';
+    }
+    count++;
 
     // 3) build a snap‐aligned container
     const item = document.createElement('div');
@@ -682,6 +688,7 @@ function setupEventListeners() {
 
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const metadata = {
+          roomId: state.roomId,
           startTime:  new Date(sessionStartTime).toISOString(),
           endTime:    new Date().toISOString(),
           durationMs: Date.now() - sessionStartTime,
