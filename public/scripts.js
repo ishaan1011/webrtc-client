@@ -33,6 +33,8 @@ const state = {
 let mediaRecorder;
 let recordedChunks = [];
 let sessionStartTime = null;
+let sessionId = null;   // identify this “recording session” across chunks
+let chunkIndex = 0;
 const chatLog = [];
 // ──────────────────────────────
 
@@ -655,56 +657,72 @@ function setupEventListeners() {
   // Check URL for room parameter
   checkUrlForRoom();
 
-  // Recording controls
+  // Recording controls (auto-chunk every 60 s)
   const startRecordingBtn = document.getElementById('start-recording');
   const stopRecordingBtn  = document.getElementById('stop-recording');
+
   if (startRecordingBtn && stopRecordingBtn) {
     startRecordingBtn.addEventListener('click', () => {
       if (!state.localStream) return alert('No media stream!');
-      recordedChunks = [];
-      sessionStartTime = Date.now();
+
+      // New session ID and reset chunk index
+      sessionId         = Date.now().toString();
+      chunkIndex        = 0;
+      sessionStartTime  = Date.now();
+
       startRecordingBtn.disabled = true;
       stopRecordingBtn.disabled  = false;
 
       mediaRecorder = new MediaRecorder(state.localStream, { mimeType: 'video/webm; codecs=vp8' });
-      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-      mediaRecorder.start();
-      console.log('📹 Recording started');
-    });
 
-    stopRecordingBtn.addEventListener('click', async () => {
-      stopRecordingBtn.disabled = true;
-      mediaRecorder.onstop = async () => {
-        console.log('🛑 Recording stopped');
+      mediaRecorder.ondataavailable = async e => {
+        if (!e.data || e.data.size === 0) return;
 
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        // Build metadata for this chunk
         const metadata = {
-          roomId: state.roomId,
-          startTime:  new Date(sessionStartTime).toISOString(),
-          endTime:    new Date().toISOString(),
-          durationMs: Date.now() - sessionStartTime,
-          chatLog
+          sessionId,
+          chunkIndex,
+          roomId:        state.roomId,
+          startOffsetMs: chunkIndex * 60000,
+          timestamp:     new Date().toISOString()
         };
 
+        // Prepare upload form
         const form = new FormData();
-        form.append('video',    blob, `recording_${sessionStartTime}.webm`);
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }), 'metadata.json');
+        const baseName = String(chunkIndex).padStart(3, '0');
+        form.append('video',
+          e.data,
+          `chunk_${baseName}.webm`
+        );
+        form.append('metadata',
+          new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
+          `chunk_${baseName}.json`
+        );
 
+        // Upload this one-minute chunk
         try {
-          const resp = await fetch(`${SIGNALING_SERVER_URL}/api/recordings`, {
-            method: 'POST',
-            body: form,
-            mode: 'cors'
-          });
-          if (resp.ok) console.log('✅ Upload successful');
-          else         console.error('❌ Upload failed', await resp.text());
+          const resp = await fetch(
+            `${SIGNALING_SERVER_URL}/api/recordings`,
+            { method: 'POST', body: form, mode: 'cors' }
+          );
+          if (!resp.ok) console.error('Chunk upload failed:', await resp.text());
         } catch (err) {
-          console.error('❌ Upload error', err);
-        } finally {
-          startRecordingBtn.disabled = false;
+          console.error('Chunk upload error:', err);
         }
+
+        chunkIndex++;
       };
+
+      // Start and request blobs every 60 000 ms (1 min)
+      mediaRecorder.start(60000);
+      console.log('📹 Chunked recording started');
+    });
+
+    stopRecordingBtn.addEventListener('click', () => {
+      stopRecordingBtn.disabled = true;
       mediaRecorder.stop();
+      startRecordingBtn.disabled = false;
+      console.log('🛑 Chunked recording stopped');
     });
   }
 }
