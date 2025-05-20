@@ -676,11 +676,24 @@ function setupEventListeners() {
 
       mediaRecorder = new MediaRecorder(state.localStream, { mimeType: 'video/webm; codecs=vp8' });
 
+      let initSegment = null;
       mediaRecorder.ondataavailable = async e => {
         if (!e.data || e.data.size === 0) return;
-        console.log(`🔖 Preparing chunk #${chunkIndex} (size ${e.data.size} bytes)`);
+        let toUpload = e.data;
+        if (chunkIndex === 0) {
+          // first chunk: save init segment
+          initSegment = e.data;
+        } else {
+          // subsequent chunks: prepend initSegment
+          toUpload = new Blob(
+            [initSegment, e.data],
+            { type: 'video/webm' }
+          );
+        }
 
-        // Build metadata for this chunk
+        console.log(`🔖 Chunk #${chunkIndex}`, toUpload);
+
+        // build metadata
         const metadata = {
           sessionId,
           chunkIndex,
@@ -689,29 +702,26 @@ function setupEventListeners() {
           timestamp:     new Date().toISOString()
         };
 
-        // Prepare upload form
+        // prepare form
         const form = new FormData();
-        const baseName = String(chunkIndex).padStart(3, '0');
-        form.append('video',
-          e.data,
-          `chunk_${baseName}.webm`
-        );
+        const name = String(chunkIndex).padStart(3, '0');
+        form.append('video',    toUpload, `chunk_${name}.webm`);
         form.append('metadata',
-          new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
-          `chunk_${baseName}.json`
+          new Blob([JSON.stringify(metadata)], { type:'application/json' }),
+          `chunk_${name}.json`
         );
 
-        // Upload this one-minute chunk
+        // upload
         try {
           const resp = await fetch(
             `${SIGNALING_SERVER_URL}/api/recordings`,
-            { method: 'POST', body: form, mode: 'cors' }
+            { method:'POST', body:form, mode:'cors' }
           );
-          if (!resp.ok) console.error('Chunk upload failed:', await resp.text());
+          if (!resp.ok) console.error('❌ chunk upload failed', await resp.text());
+          else          console.log(`✅ Chunk #${chunkIndex} uploaded`);
         } catch (err) {
-          console.error('Chunk upload error:', err);
+          console.error('❌ chunk upload error', err);
         }
-
         console.log(`✅ Chunk #${chunkIndex} uploaded`);
         chunkIndex++;
       };
@@ -729,7 +739,7 @@ function setupEventListeners() {
       clearInterval(chunkTimer);
       // pull in the final chunk (with header)
       mediaRecorder.requestData();
-      
+
       mediaRecorder.stop();
       startRecordingBtn.disabled = false;
       console.log('🛑 Chunked recording stopped');
