@@ -700,7 +700,7 @@ function setupEventListeners() {
         form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }), 'metadata.json');
 
         try {
-          const resp = await fetch(`${SIGNALING_SERVER_URL}/recordings`, {
+          const resp = await fetch(`${SIGNALING_SERVER_URL}/api/recordings`, {
             method: 'POST',
             body: form,
             mode: 'cors'
