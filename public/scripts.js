@@ -31,6 +31,7 @@ const state = {
 
 // ─ Recording state ─────────────
 let mediaRecorder;
+let chunkTimer;
 let recordedChunks = [];
 let sessionStartTime = null;
 let sessionId = null;   // identify this “recording session” across chunks
@@ -677,6 +678,7 @@ function setupEventListeners() {
 
       mediaRecorder.ondataavailable = async e => {
         if (!e.data || e.data.size === 0) return;
+        console.log(`🔖 Preparing chunk #${chunkIndex} (size ${e.data.size} bytes)`);
 
         // Build metadata for this chunk
         const metadata = {
@@ -710,16 +712,24 @@ function setupEventListeners() {
           console.error('Chunk upload error:', err);
         }
 
+        console.log(`✅ Chunk #${chunkIndex} uploaded`);
         chunkIndex++;
       };
 
-      // Start and request blobs every 60 000 ms (1 min)
-      mediaRecorder.start(60000);
+      // Start **once**, no timeslice
+      mediaRecorder.start();
+      // Every 60s, ask for data (this ensures each chunk has init headers)
+      chunkTimer = setInterval(() => mediaRecorder.requestData(), 60_000);
       console.log('📹 Chunked recording started');
     });
 
     stopRecordingBtn.addEventListener('click', () => {
       stopRecordingBtn.disabled = true;
+      // stop asking for slices
+      clearInterval(chunkTimer);
+      // pull in the final chunk (with header)
+      mediaRecorder.requestData();
+      
       mediaRecorder.stop();
       startRecordingBtn.disabled = false;
       console.log('🛑 Chunked recording stopped');
