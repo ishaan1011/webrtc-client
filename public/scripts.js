@@ -278,42 +278,33 @@ async function loadRecordings() {
   if (!feed) return;
   feed.innerHTML = '';
 
-  // 1) get all session IDs
-  const res = await fetch(`${SIGNALING_SERVER_URL}/recordings`);
+  // 1) Fetch all clips for this room in one go
+  const res = await fetch(`${SIGNALING_SERVER_URL}/api/recordings/${state.roomId}`);
   if (!res.ok) return;
-  const { sessions } = await res.json();
+  const { clips } = await res.json();
+  if (!clips.length) return; // nothing to show
 
-  // 2) for each, fetch metadata and filter by this roomId
-  let count = 0;
-  for (const sessionId of sessions) {
-    const metaRes = await fetch(
-      `${SIGNALING_SERVER_URL}/recordings/${sessionId}/metadata.json`
-    );
-    if (!metaRes.ok) continue;
-    const meta = await metaRes.json();
-    if (meta.roomId !== state.roomId) continue;
+  // Show the feed container now that we have at least one clip
+  feed.style.display = 'block';
 
-    // on first match, show the feed
-    if (count === 0) {
-      feed.style.display = 'block';
-    }
-    count++;
+  // 2) Render each clip as a full‐viewport “reel”
+  clips
+    // (optional) sort by start time
+    .sort((a, b) => new Date(a.metadata.startTime) - new Date(b.metadata.startTime))
+    .forEach(({ sessionId }) => {
+      const item = document.createElement('div');
+      item.className = 'recording-item';
 
-    // 3) build a snap‐aligned container
-    const item = document.createElement('div');
-    item.className = 'recording-item';
+      const video = document.createElement('video');
+      video.src         = `${SIGNALING_SERVER_URL}/recordings/files/${sessionId}/full.webm`;
+      video.controls    = true;
+      video.loop        = true;
+      video.muted       = true;
+      video.playsInline = true;
 
-    const video = document.createElement('video');
-    video.src = `${SIGNALING_SERVER_URL}/recordings/${sessionId}/full.webm`;
-    video.controls = true;
-    video.loop = true;
-    video.muted = true;
-    video.autoplay = false;
-    video.playsInline = true;
-
-    item.appendChild(video);
-    feed.appendChild(item);
-  }
+      item.appendChild(video);
+      feed.appendChild(item);
+    });
 }
 
 // Start the meeting timer
