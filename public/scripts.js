@@ -739,7 +739,8 @@ function startNextSegment() {
 
   mediaRecorder.onstop = () => {
     // if Stop button wasn't clicked (i.e. it’s still disabled = false), schedule next
-    if (stopRecordingBtn.disabled) return;
+    const stopBtn = document.getElementById('stop-recording');
+    if (stopBtn.disabled) return;
     startNextSegment();
   };
 
