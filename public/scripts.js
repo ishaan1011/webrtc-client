@@ -29,6 +29,13 @@ const state = {
   }
 };
 
+// ─ Recording state ─────────────
+let mediaRecorder;
+let recordedChunks = [];
+let sessionStartTime = null;
+const chatLog = [];
+// ──────────────────────────────
+
 // Function to get DOM elements (used to ensure elements are found after DOM is fully loaded)
 function getDOMElements() {
   return {
@@ -608,13 +615,70 @@ function setupEventListeners() {
   
   // Check URL for room parameter
   checkUrlForRoom();
+
+  // Recording controls
+  const startRecordingBtn = document.getElementById('start-recording');
+  const stopRecordingBtn  = document.getElementById('stop-recording');
+  if (startRecordingBtn && stopRecordingBtn) {
+    startRecordingBtn.addEventListener('click', () => {
+      if (!state.localStream) return alert('No media stream!');
+      recordedChunks = [];
+      sessionStartTime = Date.now();
+      startRecordingBtn.disabled = true;
+      stopRecordingBtn.disabled  = false;
+
+      mediaRecorder = new MediaRecorder(state.localStream, { mimeType: 'video/webm; codecs=vp8' });
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+      mediaRecorder.start();
+      console.log('📹 Recording started');
+    });
+
+    stopRecordingBtn.addEventListener('click', async () => {
+      stopRecordingBtn.disabled = true;
+      mediaRecorder.onstop = async () => {
+        console.log('🛑 Recording stopped');
+
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const metadata = {
+          startTime:  new Date(sessionStartTime).toISOString(),
+          endTime:    new Date().toISOString(),
+          durationMs: Date.now() - sessionStartTime,
+          chatLog
+        };
+
+        const form = new FormData();
+        form.append('video',    blob, `recording_${sessionStartTime}.webm`);
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }), 'metadata.json');
+
+        try {
+          const resp = await fetch('/recordings', { method: 'POST', body: form });
+          if (resp.ok) console.log('✅ Upload successful');
+          else         console.error('❌ Upload failed', await resp.text());
+        } catch (err) {
+          console.error('❌ Upload error', err);
+        } finally {
+          startRecordingBtn.disabled = false;
+        }
+      };
+      mediaRecorder.stop();
+    });
+  }
 }
 
 function sendChatMessage() {
   const text = elements.chatInput.value.trim();
   if (!text) return;
+
+  // Log outgoing chat
+  chatLog.push({
+    timestamp: Date.now() - (sessionStartTime || Date.now()),
+    sender: state.userName,
+    text
+  });
+
   // send to server
   socket.emit('sendMessage', text);
+
   // render locally
   showMessage(text, 'from-me');
   elements.chatInput.value = '';
@@ -727,6 +791,12 @@ function setupSocketListeners() {
   });
 
   socket.on('receiveMessage', ({ userName, message }) => {
+    // Log incoming chat
+    chatLog.push({
+      timestamp: Date.now() - (sessionStartTime || Date.now()),
+      sender: userName,
+      text: message
+    });
     showMessage(message, 'from-other');
   });
 
