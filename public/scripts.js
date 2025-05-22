@@ -687,6 +687,80 @@ function setupEventListeners() {
       startRecordingBtn.disabled = false;
     });
   }
+
+  // Avatar panel toggle
+  const addAvatarBtn = document.getElementById('add-avatar');
+  const avatarPanel  = document.getElementById('avatar-panel');
+  const startTalk    = document.getElementById('start-talking');
+  const stopTalk     = document.getElementById('stop-talking');
+  const transcriptEl = document.getElementById('avatar-transcript');
+  let avatarRecorder, avatarChunks = [], avatarMicStream;
+
+  addAvatarBtn?.addEventListener('click', () => {
+    avatarPanel.classList.toggle('d-none');
+    // when opening, enable “Start” button
+    if (!avatarPanel.classList.contains('d-none')) {
+      startTalk.disabled = false;
+    }
+  });
+
+  startTalk?.addEventListener('click', async () => {
+    startTalk.disabled = true;
+    stopTalk.disabled  = false;
+    avatarChunks = [];
+    avatarMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    avatarRecorder   = new MediaRecorder(avatarMicStream);
+    avatarRecorder.ondataavailable = e => e.data.size && avatarChunks.push(e.data);
+    avatarRecorder.start();
+  });
+
+  stopTalk?.addEventListener('click', async () => {
+    stopTalk.disabled  = true;
+    avatarRecorder.onstop = async () => {
+      avatarMicStream.getTracks().forEach(t => t.stop());
+
+      // 1) STT→LLM
+      transcriptEl.textContent = '…thinking…';
+      let replyText;
+      try {
+        const blob = new Blob(avatarChunks, { type: 'audio/webm' });
+        const form = new FormData();
+        form.append('audio', blob, 'avatar.webm');
+        const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, { method:'POST', body: form });
+        const { reply } = await r.json();
+        replyText = reply;
+      } catch (err) {
+        transcriptEl.textContent = '[STT failed]';
+        startTalk.disabled = false;
+        return;
+      }
+      transcriptEl.textContent = replyText;
+
+      // 2) LLM→TTS
+      try {
+        const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: replyText })
+        });
+        const arrayBuf = await ttsRes.arrayBuffer();
+        const audioCtx = new AudioContext();
+        await audioCtx.resume();
+        const decoded = await audioCtx.decodeAudioData(arrayBuf);
+        const src = audioCtx.createBufferSource();
+        src.buffer = decoded;
+        src.connect(audioCtx.destination);
+        src.start();
+        src.onended = () => stopTalk.disabled = true;
+      } catch (err) {
+        console.error('TTS/playback error', err);
+        transcriptEl.textContent = '[TTS failed]';
+      }
+
+      startTalk.disabled = false;
+    };
+    avatarRecorder.stop();
+  });
 }
 
 // ─── helper: record 60 s, upload, then auto-restart ────────────────────────
