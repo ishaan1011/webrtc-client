@@ -701,9 +701,9 @@ function setupEventListeners() {
 
   addAvatarBtn?.addEventListener('click', () => {
     console.log('🟢 avatar button clicked');
-    avatarPanel.classList.toggle('show');
+    avatarPanel.classList.toggle('d-none');
     // when opening, enable “Start” button
-    if (!avatarPanel.classList.contains('show')) {
+    if (!avatarPanel.classList.contains('d-none')) {
       startTalk.disabled = false;
     }
   });
