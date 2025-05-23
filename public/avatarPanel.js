@@ -1,10 +1,10 @@
 // avatarPanel.js
 export function initAvatarPanel(config = {}) {
-  const proxyUrl = config.proxyUrl || 'http://clavisds01.feeltiptop.com/demos/banana/prx.php';
+  const proxyUrl = config.proxyUrl || 'https://clavisds01.feeltiptop.com/demos/banana/prx.php';
   const chatAPI = config.chatAPI || 'https://feeltiptop.com/demos/ent/Chat/chatapi.php';
-  const solrAPI = config.solrAPI || 'http://clavisds01.feeltiptop.com:8983/solr/360calls-speaker/select?q=speaker_s:*&facet=true&facet.field=speaker_s&facet.mincount=1&rows=0';
-  const mergeUrl = config.mergeUrl || 'http://clavisds02.feeltiptop.com/demos/ira-test/backend-merge.php';
-  const splitApi = config.splitApi || 'http://clavisds02.feeltiptop.com/demos/ira-test/splitvideo1.php';
+  const solrAPI = config.solrAPI || 'https://clavisds01.feeltiptop.com:8983/solr/360calls-speaker/select?q=speaker_s:*&facet=true&facet.field=speaker_s&facet.mincount=1&rows=0';
+  const mergeUrl = config.mergeUrl || 'https://clavisds02.feeltiptop.com/demos/ira-test/backend-merge.php';
+  const splitApi  = config.splitApi  || 'https://clavisds02.feeltiptop.com/demos/ira-test/splitvideo1.php';
 
   let numutter = 10;
   let whoseavatar = '';
