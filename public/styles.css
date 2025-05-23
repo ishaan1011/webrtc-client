@@ -1436,18 +1436,18 @@ body:not(.light-mode) .input-group .input-group-text {
 #avatar-panel {
   position: absolute;
   top: 0;
-  right: -320px;         /* hide off-screen */
+  right: -320px;
   width: 320px;
-  height: 100%;
+  height: calc(100% - 80px); /* leaves space for the footer */
   background-color: var(--card-bg);
   border-left: 1px solid var(--btn-primary-h);
   transition: right 0.3s ease;
-  padding: 16px;
+  padding: 16px 16px 24px;
   z-index: 20;
   overflow-y: auto;
+  border-radius: 0 0 0 8px; /* optional for cleaner bottom corner */
 }
 
-/* when we add the `show` class it slides in */
 #avatar-panel.show {
   right: 0;
 }
