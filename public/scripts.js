@@ -37,6 +37,8 @@ let sessionStartTime = null;
 let sessionId = null;   // identify this “recording session” across chunks
 let chunkIndex = 0;
 const chatLog = [];
+import { initAvatarPanel } from './avatarPanel.js';
+initAvatarPanel();
 // ──────────────────────────────
 
 // Function to get DOM elements (used to ensure elements are found after DOM is fully loaded)
