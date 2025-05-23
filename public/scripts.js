@@ -697,9 +697,9 @@ function setupEventListeners() {
   let avatarRecorder, avatarChunks = [], avatarMicStream;
 
   addAvatarBtn?.addEventListener('click', () => {
-    avatarPanel.classList.toggle('d-none');
+    avatarPanel.classList.toggle('show');
     // when opening, enable “Start” button
-    if (!avatarPanel.classList.contains('d-none')) {
+    if (!avatarPanel.classList.contains('show')) {
       startTalk.disabled = false;
     }
   });
@@ -727,8 +727,9 @@ function setupEventListeners() {
         const form = new FormData();
         form.append('audio', blob, 'avatar.webm');
         const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, { method:'POST', body: form });
-        const { reply } = await r.json();
-        replyText = reply;
+        const json = await r.json();
+        console.log('🔊 /bot/reply response:', json);
+        replyText = json.reply || json.transcript || '[no reply field]';
       } catch (err) {
         transcriptEl.textContent = '[STT failed]';
         startTalk.disabled = false;

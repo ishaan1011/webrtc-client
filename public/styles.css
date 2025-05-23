@@ -1415,17 +1415,6 @@ body:not(.light-mode) .input-group .input-group-text {
   text-align: center;
 }
 
-/* Transcript box */
-#avatar-transcript {
-  min-height: 80px;
-  padding: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  color: var(--text);
-  font-size: 0.9rem;
-  overflow-y: auto;
-}
-
 /* Buttons full-width and spaced */
 #avatar-panel button {
   width: 100%;
@@ -1439,5 +1428,36 @@ body:not(.light-mode) .input-group .input-group-text {
 }
 .light-mode #avatar-panel h5,
 .light-mode #avatar-transcript {
+  color: var(--text);
+}
+
+/* ─── Avatar sidebar ───────────────────────────────────────────────── */
+
+#avatar-panel {
+  position: absolute;
+  top: 0;
+  right: -320px;         /* hide off-screen */
+  width: 320px;
+  height: 100%;
+  background-color: var(--card-bg);
+  border-left: 1px solid var(--btn-primary-h);
+  transition: right 0.3s ease;
+  padding: 16px;
+  z-index: 20;
+  overflow-y: auto;
+}
+
+/* when we add the `show` class it slides in */
+#avatar-panel.show {
+  right: 0;
+}
+
+/* make transcript area taller & scrollable */
+#avatar-transcript {
+  min-height: 150px;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border-radius: 4px;
+  overflow-y: auto;
   color: var(--text);
 }
