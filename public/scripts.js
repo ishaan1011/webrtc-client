@@ -702,6 +702,10 @@ function setupEventListeners() {
   addAvatarBtn?.addEventListener('click', () => {
     console.log('🟢 avatar button clicked');
     avatarPanel.classList.toggle('d-none');
+    // Re-query DOM for elements that might not exist yet
+    const startTalk = document.getElementById('start-talking');
+    const stopTalk  = document.getElementById('stop-talking');
+
     // when opening, enable “Start” button
     if (!avatarPanel.classList.contains('d-none')) {
       startTalk.disabled = false;
