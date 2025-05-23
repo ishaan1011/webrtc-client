@@ -691,12 +691,14 @@ function setupEventListeners() {
   // Avatar panel toggle
   const addAvatarBtn = document.getElementById('add-avatar');
   const avatarPanel  = document.getElementById('avatar-panel');
+  console.log('👀 avatarBtn:', addAvatarBtn, 'avatarPanel:', avatarPanel);
   const startTalk    = document.getElementById('start-talking');
   const stopTalk     = document.getElementById('stop-talking');
   const transcriptEl = document.getElementById('avatar-transcript');
   let avatarRecorder, avatarChunks = [], avatarMicStream;
 
   addAvatarBtn?.addEventListener('click', () => {
+    console.log('🟢 avatar button clicked');
     avatarPanel.classList.toggle('show');
     // when opening, enable “Start” button
     if (!avatarPanel.classList.contains('show')) {
