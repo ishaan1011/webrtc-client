@@ -1,6 +1,6 @@
 // avatarPanel.js
 export function initAvatarPanel(config = {}) {
-  const proxyUrl = config.proxyUrl || `${window.location.origin}/api/proxy`;
+  const proxyUrl = config.proxyUrl || 'https://proxy-server-six-phi.vercel.app/api/proxy';
   const chatAPI = config.chatAPI || 'https://feeltiptop.com/demos/ent/Chat/chatapi.php';
   const solrAPI = config.solrAPI || 'https://clavisds01.feeltiptop.com:8983/solr/360calls-speaker/select?q=speaker_s:*&facet=true&facet.field=speaker_s&facet.mincount=1&rows=0';
   const mergeUrl = config.mergeUrl || 'https://clavisds02.feeltiptop.com/demos/ira-test/backend-merge.php';
