@@ -10,7 +10,7 @@ export function initAvatarPanel(config = {}) {
   let whoseavatar = '';
 
   const chatBtn = document.getElementById('chat-btn');
-  const chatInput = document.getElementById('chat-input');
+  const chatInput = document.getElementById('avatar-chat-input');
   const speakerDropdown = document.getElementById('speaker-dropdown');
   const numutterDropdown = document.getElementById('numutter-dropdown');
   const languageDropdown = document.getElementById('language-dropdown');
@@ -24,6 +24,7 @@ export function initAvatarPanel(config = {}) {
     try {
       const res = await fetch(proxySolrUrl);
       const data = await res.json();
+      console.log('🧐 raw Solr response:', data);
       const speakers = data.contents.facet_counts.facet_fields.speaker_s;
       speakerDropdown.innerHTML = '<option value="">All Speakers</option>';
       for (let i = 0; i < speakers.length; i += 2) {
