@@ -723,29 +723,52 @@ function setupEventListeners() {
   });
 
   stopTalk?.addEventListener('click', async () => {
-    stopTalk.disabled  = true;
+    stopTalk.disabled = true;
     avatarRecorder.onstop = async () => {
+      // Stop the mic
       avatarMicStream.getTracks().forEach(t => t.stop());
 
-      // 1) STT→LLM
+      // 1) STT → Avatar Chat API
       transcriptEl.textContent = '…thinking…';
-      let replyText;
+      let replyText = '[no reply]';
       try {
         const blob = new Blob(avatarChunks, { type: 'audio/webm' });
         const form = new FormData();
         form.append('audio', blob, 'avatar.webm');
-        const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, { method:'POST', body: form });
+
+        // Build the full chatAPI URL (including your params)
+        const chatHref = `${chatAPI}`
+          + `?status=${encodeURIComponent(transcriptEl.textContent)}`
+          + `&numutter=${encodeURIComponent(numutter)}`;
+
+        // Now proxy that entire URL
+        const r = await fetch(
+          `${proxyUrl}?url=${encodeURIComponent(chatHref)}`,
+          { method: 'GET' }
+        );
+
+        if (!r.ok) throw new Error(`Proxy returned ${r.status}`);
+
         const json = await r.json();
-        console.log('🔊 /bot/reply response:', json);
-        replyText = json.reply || json.transcript || '[no reply field]';
+        console.log('🔊 Avatar API response via proxy:', json);
+
+        // Unwrap the proxy envelope
+        const contents = json.contents;
+        // Pull out whatever field your chatAPI actually uses
+        replyText = contents.reply 
+          || contents.transcript 
+          || JSON.stringify(contents).slice(0, 200);
       } catch (err) {
-        transcriptEl.textContent = '[STT failed]';
+        console.error('Avatar chat failed:', err);
+        transcriptEl.textContent = '[chat failed]';
         startTalk.disabled = false;
         return;
       }
+
+      // Display the reply
       transcriptEl.textContent = replyText;
 
-      // 2) LLM→TTS
+      // 2) Avatar TTS (unchanged)
       try {
         const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
           method: 'POST',
@@ -768,6 +791,7 @@ function setupEventListeners() {
 
       startTalk.disabled = false;
     };
+
     avatarRecorder.stop();
   });
 }
