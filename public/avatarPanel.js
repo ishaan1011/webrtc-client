@@ -23,9 +23,41 @@ export function initAvatarPanel(config = {}) {
   async function fetchSpeakers() {
     try {
       const res = await fetch(proxySolrUrl);
-      const data = await res.json();
-      console.log('🧐 raw Solr response:', data);
-      const speakers = data.contents.facet_counts.facet_fields.speaker_s;
+
+      // 1) Check for HTTP errors up front
+      if (!res.ok) {
+        console.error('❌ Solr proxy returned status', res.status, res.statusText);
+        const body = await res.text();
+        console.error('❌ Solr proxy response body:', body);
+        return;
+      }
+
+      // 2) Grab the raw text so we can inspect it
+      const txt = await res.text();
+      console.log('📥 raw Solr proxy response:', txt);
+
+      // 3) Try parsing JSON, with its own try/catch
+      let data;
+      try {
+        data = JSON.parse(txt);
+      } catch (jsonErr) {
+        console.error('❌ JSON.parse failed:', jsonErr);
+        return;
+      }
+
+      // 4) Safely dig into the path, bail if shape is unexpected
+      const speakers = data
+        && data.contents
+        && data.contents.facet_counts
+        && data.contents.facet_counts.facet_fields
+        && data.contents.facet_counts.facet_fields.speaker_s;
+
+      if (!Array.isArray(speakers)) {
+        console.error('❌ Unexpected shape for speaker_s:', speakers);
+        return;
+      }
+
+      // 5) Populate dropdown
       speakerDropdown.innerHTML = '<option value="">All Speakers</option>';
       for (let i = 0; i < speakers.length; i += 2) {
         const name = speakers[i];
@@ -36,10 +68,12 @@ export function initAvatarPanel(config = {}) {
           speakerDropdown.appendChild(opt);
         }
       }
+
     } catch (err) {
-      console.error('Error fetching speakers:', err);
+      console.error('❌ Network or other error fetching speakers:', err);
     }
   }
+
 
   async function triggerChat() {
     const text = chatInput.value.trim();
