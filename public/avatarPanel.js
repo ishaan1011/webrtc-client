@@ -85,7 +85,7 @@ export function initAvatarPanel(config = {}) {
 
   async function fetchChatData(text) {
     const constraint = whoseavatar ? `queryconstraint=speaker_s:%22${encodeURIComponent(whoseavatar)}%22&` : '';
-    const href = `${chatAPI}?solrhost=clavisds01.feeltiptop.com&coll=360calls-speaker&${constraint}details=1&numutter=${numutter}&status=${encodeURIComponent(text)}`;
+    const href = `${avatarAPI}?solrhost=clavisds01.feeltiptop.com&coll=360calls-speaker&${constraint}details=1&numutter=${numutter}&status=${encodeURIComponent(text)}`;
     const fullUrl = `${proxyUrl}?url=${encodeURIComponent(href)}`;
 
     try {
