@@ -740,30 +740,36 @@ function setupEventListeners() {
         startTalk.disabled = false;
         return;
       }
-      transcriptEl.textContent = replyText;
 
-      // 2) LLM→TTS
-      try {
-        const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: replyText })
-        });
-        const arrayBuf = await ttsRes.arrayBuffer();
-        const audioCtx = new AudioContext();
-        await audioCtx.resume();
-        const decoded = await audioCtx.decodeAudioData(arrayBuf);
-        const src = audioCtx.createBufferSource();
-        src.buffer = decoded;
-        src.connect(audioCtx.destination);
-        src.start();
-        src.onended = () => stopTalk.disabled = true;
-      } catch (err) {
-        console.error('TTS/playback error', err);
-        transcriptEl.textContent = '[TTS failed]';
-      }
-
+      // 2) Skip TTS: dump the full API JSON into the transcript area
+      transcriptEl.textContent = JSON.stringify(json, null, 2);
+      // Re-enable the Start button so user can ask again
       startTalk.disabled = false;
+      
+      //transcriptEl.textContent = replyText;
+
+      // // 2) LLM→TTS
+      // try {
+      //   const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ text: replyText })
+      //   });
+      //   const arrayBuf = await ttsRes.arrayBuffer();
+      //   const audioCtx = new AudioContext();
+      //   await audioCtx.resume();
+      //   const decoded = await audioCtx.decodeAudioData(arrayBuf);
+      //   const src = audioCtx.createBufferSource();
+      //   src.buffer = decoded;
+      //   src.connect(audioCtx.destination);
+      //   src.start();
+      //   src.onended = () => stopTalk.disabled = true;
+      // } catch (err) {
+      //   console.error('TTS/playback error', err);
+      //   transcriptEl.textContent = '[TTS failed]';
+      // }
+
+      // startTalk.disabled = false;
     };
     avatarRecorder.stop();
   });
@@ -775,34 +781,45 @@ function setupEventListeners() {
     document.getElementById('avatar-transcript').textContent = 'Thinking…';
 
     try {
-      // 1) send text to LLM
-      const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
+      // // 1) send text to LLM
+      // const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ text: question })
+      // });
+      // const { reply: answerText } = await replyRes.json();
+      // document.getElementById('avatar-transcript').textContent = answerText;
+
+      // // 2) fetch & play TTS
+      // const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ text: answerText })
+      // });
+      // const audioData = await ttsRes.arrayBuffer();
+
+      // const audioCtx = new AudioContext();
+      // await audioCtx.resume();
+      // const decoded = await audioCtx.decodeAudioData(audioData);
+      // const src = audioCtx.createBufferSource();
+      // src.buffer = decoded;
+      // src.connect(audioCtx.destination);
+      // src.start();
+      // src.onended = () => {
+      //   textSubmit.disabled = false;
+      // };
+
+      // 1) send text to your Bot API and display raw JSON
+      const replyRes = await fetch(`${SIGNAL_SERVER_URL}/bot/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: question })
       });
-      const { reply: answerText } = await replyRes.json();
-      document.getElementById('avatar-transcript').textContent = answerText;
-
-      // 2) fetch & play TTS
-      const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: answerText })
-      });
-      const audioData = await ttsRes.arrayBuffer();
-
-      const audioCtx = new AudioContext();
-      await audioCtx.resume();
-      const decoded = await audioCtx.decodeAudioData(audioData);
-      const src = audioCtx.createBufferSource();
-      src.buffer = decoded;
-      src.connect(audioCtx.destination);
-      src.start();
-      src.onended = () => {
-        textSubmit.disabled = false;
-      };
-
+      const raw = await replyRes.json();
+      // dump the full API response (including video snippets) into the transcript area
+      transcriptEl.textContent = JSON.stringify(raw, null, 2);
+      // re-enable the button immediately (no audio to wait for)
+      textSubmit.disabled = false;
     } catch (err) {
       console.error('Avatar text query failed', err);
       document.getElementById('avatar-transcript')
