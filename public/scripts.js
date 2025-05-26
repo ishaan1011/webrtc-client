@@ -776,7 +776,7 @@ function setupEventListeners() {
 
     try {
       // 1) send text to LLM
-      const replyRes = await fetch(`${SIGNAL_SERVER_URL}/bot/reply`, {
+      const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: question })
@@ -785,7 +785,7 @@ function setupEventListeners() {
       document.getElementById('avatar-transcript').textContent = answerText;
 
       // 2) fetch & play TTS
-      const ttsRes = await fetch(`${SIGNAL_SERVER_URL}/bot/tts`, {
+      const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: answerText })
