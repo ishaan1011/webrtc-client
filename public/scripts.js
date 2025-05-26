@@ -695,6 +695,8 @@ function setupEventListeners() {
   console.log('👀 avatarBtn:', addAvatarBtn, 'avatarPanel:', avatarPanel);
   const startTalk    = document.getElementById('start-talking');
   const stopTalk     = document.getElementById('stop-talking');
+  const textInput    = document.getElementById('avatar-text-input');
+  const textSubmit   = document.getElementById('avatar-text-submit');
   const transcriptEl = document.getElementById('avatar-transcript');
   let avatarRecorder, avatarChunks = [], avatarMicStream;
 
@@ -764,6 +766,49 @@ function setupEventListeners() {
       startTalk.disabled = false;
     };
     avatarRecorder.stop();
+  });
+
+  textSubmit.addEventListener('click', async () => {
+    const question = textInput.value.trim();
+    if (!question) return;
+    textSubmit.disabled = true;
+    document.getElementById('avatar-transcript').textContent = 'Thinking…';
+
+    try {
+      // 1) send text to LLM
+      const replyRes = await fetch(`${SIGNAL_SERVER_URL}/bot/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: question })
+      });
+      const { reply: answerText } = await replyRes.json();
+      document.getElementById('avatar-transcript').textContent = answerText;
+
+      // 2) fetch & play TTS
+      const ttsRes = await fetch(`${SIGNAL_SERVER_URL}/bot/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: answerText })
+      });
+      const audioData = await ttsRes.arrayBuffer();
+
+      const audioCtx = new AudioContext();
+      await audioCtx.resume();
+      const decoded = await audioCtx.decodeAudioData(audioData);
+      const src = audioCtx.createBufferSource();
+      src.buffer = decoded;
+      src.connect(audioCtx.destination);
+      src.start();
+      src.onended = () => {
+        textSubmit.disabled = false;
+      };
+
+    } catch (err) {
+      console.error('Avatar text query failed', err);
+      document.getElementById('avatar-transcript')
+              .textContent = 'Error – please try again.';
+      textSubmit.disabled = false;
+    }
   });
 }
 
