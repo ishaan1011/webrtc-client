@@ -745,7 +745,7 @@ function setupEventListeners() {
       transcriptEl.textContent = JSON.stringify(json, null, 2);
       // Re-enable the Start button so user can ask again
       startTalk.disabled = false;
-      
+
       //transcriptEl.textContent = replyText;
 
       // // 2) LLM→TTS
@@ -810,7 +810,7 @@ function setupEventListeners() {
       // };
 
       // 1) send text to your Bot API and display raw JSON
-      const replyRes = await fetch(`${SIGNAL_SERVER_URL}/bot/reply`, {
+      const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: question })
