@@ -728,13 +728,14 @@ function setupEventListeners() {
 
       // 1) STT→LLM
       transcriptEl.textContent = '…thinking…';
-      let replyText;
+      let replyText, json;
       try {
         const blob = new Blob(avatarChunks, { type: 'audio/webm' });
         const form = new FormData();
         form.append('audio', blob, 'avatar.webm');
         const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, { method:'POST', body: form });
-        const json = await r.json();
+        // const json = await r.json();
+        json = await r.json();          // assign to outer json
         console.log('🔊 /bot/reply response:', json);
         replyText = json.reply || json.transcript || '[no reply field]';
       } catch (err) {
