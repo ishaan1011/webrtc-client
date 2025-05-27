@@ -744,35 +744,45 @@ function setupEventListeners() {
         return;
       }
 
-      // 2) Skip TTS: dump the full API JSON into the transcript area
-      transcriptEl.textContent = JSON.stringify(json, null, 2);
-      // Re-enable the Start button so user can ask again
+      // 2) Parse the same way textSubmit does: build clips & render
+      try {
+        // raw.reply holds the JSON-encoded nested array
+        const outer = JSON.parse(json.reply);
+        const entries = Array.isArray(outer) && Array.isArray(outer[0]) ? outer[0] : [];
+
+        // build avatarClips array
+        avatarClips = entries.map(e => ({
+          snippet:  e.snippet,
+          videoUrl: `https://clavisds02.feeltiptop.com/360TeamCalls/downloads/` +
+                    e.title.slice(0,4)+'/'+e.title.slice(5,7)+'/'+e.title+'/'+e.title+'.mp4' +
+                    `#t=${e.videodetails.snippetstarttimesecs},${e.videodetails.snippetendtimesecs}`
+        }));
+        avatarIndex = 0;
+
+        // inject slot if first time
+        const grid = document.getElementById('participants-grid');
+        if (grid && !document.getElementById('avatar-container')) {
+          grid.classList.add('three-participants');
+          const avatarSlot = document.createElement('div');
+          avatarSlot.id = 'avatar-container';
+          avatarSlot.className = 'video-wrapper';
+          avatarSlot.innerHTML = `
+            <div class="video-placeholder" id="avatar-placeholder">
+              <i class="fas fa-robot fa-2x"></i><p>Your Avatar</p>
+            </div>
+            <video id="avatar-video" autoplay playsinline hidden></video>
+            <div class="video-overlay"><div class="participant-name">Avatar</div></div>`;
+          grid.appendChild(avatarSlot);
+        }
+
+        // render first clip
+        renderAvatarClip(0);
+      } catch (err2) {
+        // fallback to raw JSON on parse failure
+        transcriptEl.textContent = JSON.stringify(json, null, 2);
+      }
+      // Re-enable the Start button
       startTalk.disabled = false;
-
-      //transcriptEl.textContent = replyText;
-
-      // // 2) LLM→TTS
-      // try {
-      //   const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({ text: replyText })
-      //   });
-      //   const arrayBuf = await ttsRes.arrayBuffer();
-      //   const audioCtx = new AudioContext();
-      //   await audioCtx.resume();
-      //   const decoded = await audioCtx.decodeAudioData(arrayBuf);
-      //   const src = audioCtx.createBufferSource();
-      //   src.buffer = decoded;
-      //   src.connect(audioCtx.destination);
-      //   src.start();
-      //   src.onended = () => stopTalk.disabled = true;
-      // } catch (err) {
-      //   console.error('TTS/playback error', err);
-      //   transcriptEl.textContent = '[TTS failed]';
-      // }
-
-      // startTalk.disabled = false;
     };
     avatarRecorder.stop();
   });
@@ -784,34 +794,6 @@ function setupEventListeners() {
     document.getElementById('avatar-transcript').textContent = 'Thinking…';
 
     try {
-      // // 1) send text to LLM
-      // const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ text: question })
-      // });
-      // const { reply: answerText } = await replyRes.json();
-      // document.getElementById('avatar-transcript').textContent = answerText;
-
-      // // 2) fetch & play TTS
-      // const ttsRes = await fetch(`${SIGNALING_SERVER_URL}/bot/tts`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ text: answerText })
-      // });
-      // const audioData = await ttsRes.arrayBuffer();
-
-      // const audioCtx = new AudioContext();
-      // await audioCtx.resume();
-      // const decoded = await audioCtx.decodeAudioData(audioData);
-      // const src = audioCtx.createBufferSource();
-      // src.buffer = decoded;
-      // src.connect(audioCtx.destination);
-      // src.start();
-      // src.onended = () => {
-      //   textSubmit.disabled = false;
-      // };
-
       // 1) send text to your Bot API and display raw JSON
       const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
         method: 'POST',
