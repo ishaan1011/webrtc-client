@@ -779,6 +779,11 @@ function setupEventListeners() {
 
         // render first clip
         renderAvatarClip(0);
+        avatarIndex = 0;
+        const prevBtn = document.getElementById('avatar-prev');
+        const nextBtn = document.getElementById('avatar-next');
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = avatarClips.length < 2;
       } catch (err2) {
         // fallback to raw JSON on parse failure
         transcriptEl.textContent = JSON.stringify(json, null, 2);
