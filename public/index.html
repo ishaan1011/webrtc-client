@@ -148,11 +148,16 @@
             </div>
           </div>
           
-          <!-- Placeholder for more participants -->
-          <div class="empty-participant-slot">
-            <div class="empty-slot-content">
-              <i class="fas fa-user-plus"></i>
-              <p>Waiting for others to join...</p>
+          <!-- Avatar participant slot -->
+          <div id="avatar-container" class="video-wrapper avatar-slot">
+            <!-- starts empty, will be filled dynamically -->
+            <div class="video-placeholder">
+              <i class="fas fa-robot fa-2x"></i>
+              <p>Your Avatar</p>
+            </div>
+            <video id="avatar-video" autoplay playsinline hidden></video>
+            <div class="video-overlay">
+              <div class="participant-name">Avatar</div>
             </div>
           </div>
         </div>
