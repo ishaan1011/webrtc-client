@@ -821,7 +821,8 @@ function setupEventListeners() {
       // parse out the array of snippet objects
       let entries = [];
       try {
-        entries = JSON.parse(raw.reply);
+        const outer = JSON.parse(raw.reply);
+        entries = Array.isArray(outer) && Array.isArray(outer[0]) ? outer[0] : [];
       } catch (e) {
         transcriptEl.textContent = raw.reply;
         textSubmit.disabled = false;
