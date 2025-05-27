@@ -39,6 +39,8 @@ let sessionId = null;   // identify this “recording session” across chunks
 let chunkIndex = 0;
 const chatLog = [];
 // ──────────────────────────────
+let avatarClips = [];      // will be filled with objects { snippet, videoUrl }
+let avatarIndex = 0;       // which clip is currently showing
 
 // Function to get DOM elements (used to ensure elements are found after DOM is fully loaded)
 function getDOMElements() {
@@ -816,9 +818,31 @@ function setupEventListeners() {
         body: JSON.stringify({ text: question })
       });
       const raw = await replyRes.json();
-      // dump the full API response (including video snippets) into the transcript area
-      transcriptEl.textContent = JSON.stringify(raw, null, 2);
-      // re-enable the button immediately (no audio to wait for)
+      // parse out the array of snippet objects
+      let entries = [];
+      try {
+        entries = JSON.parse(raw.reply);
+      } catch (e) {
+        transcriptEl.textContent = raw.reply;
+        textSubmit.disabled = false;
+        return;
+      }
+
+      // build our avatarClips array
+      avatarClips = entries.map(e => ({
+        snippet:  e.snippet,
+        videoUrl: `https://clavisds02.feeltiptop.com/360TeamCalls/downloads/` +
+                  e.title.slice(0,4)+'/'+e.title.slice(5,7)+'/'+e.title+'/'+e.title+'.mp4' +
+                  `#t=${e.videodetails.snippetstarttimesecs},${e.videodetails.snippetendtimesecs}`
+      }));
+      avatarIndex = 0;
+
+      // enable nav buttons
+      document.getElementById('avatar-prev').disabled = true;
+      document.getElementById('avatar-next').disabled = avatarClips.length < 2;
+
+      // render first clip
+      renderAvatarClip(0);
       textSubmit.disabled = false;
     } catch (err) {
       console.error('Avatar text query failed', err);
@@ -828,6 +852,48 @@ function setupEventListeners() {
     }
   });
 }
+
+// Render a given clip index into the sidebar text + avatar video element
+function renderAvatarClip(i) {
+  const clip = avatarClips[i];
+  document.getElementById('avatar-text').textContent = clip.snippet;
+  const vid = document.getElementById('avatar-video');
+  vid.src    = clip.videoUrl;
+  vid.hidden = false;
+  vid.play?.();
+}
+
+// Prev/Next button wiring
+document.getElementById('avatar-prev').addEventListener('click', () => {
+  if (avatarIndex > 0) {
+    avatarIndex--;
+    renderAvatarClip(avatarIndex);
+    document.getElementById('avatar-next').disabled = false;
+    document.getElementById('avatar-prev').disabled = avatarIndex === 0;
+  }
+});
+document.getElementById('avatar-next').addEventListener('click', () => {
+  if (avatarIndex < avatarClips.length - 1) {
+    avatarIndex++;
+    renderAvatarClip(avatarIndex);
+    document.getElementById('avatar-prev').disabled = false;
+    document.getElementById('avatar-next').disabled = avatarIndex === avatarClips.length - 1;
+  }
+});
+
+// Ensure the avatar-video element exists in the gallery
+window.addEventListener('load', () => {
+  const wrapper = document.getElementById('remote-video-wrapper');
+  if (wrapper && !document.getElementById('avatar-video')) {
+    const avatarVideo = document.createElement('video');
+    avatarVideo.id       = 'avatar-video';
+    avatarVideo.className= 'remote-video';
+    avatarVideo.controls = true;
+    avatarVideo.hidden   = true;
+    wrapper.appendChild(avatarVideo);
+  }
+});
+
 
 // ─── helper: record 60 s, upload, then auto-restart ────────────────────────
 let segmentTimer;
