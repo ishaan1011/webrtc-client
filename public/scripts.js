@@ -857,11 +857,14 @@ function setupEventListeners() {
 // Render a given clip index into the sidebar text + avatar video element
 function renderAvatarClip(i) {
   const clip = avatarClips[i];
-  document.getElementById('avatar-text').textContent = clip.snippet;
-  const vid = document.getElementById('avatar-video');
-  vid.src    = clip.videoUrl;
-  vid.hidden = false;
-  vid.play?.();
+  transcriptEl.textContent = clip.snippet;
+  const rv = document.getElementById('remote-video');
+  if (rv) {
+    rv.src      = clip.videoUrl;
+    rv.hidden   = false;
+    rv.controls = true;
+    rv.play?.();
+  }
 }
 
 // Prev/Next button wiring
@@ -881,20 +884,6 @@ document.getElementById('avatar-next').addEventListener('click', () => {
     document.getElementById('avatar-next').disabled = avatarIndex === avatarClips.length - 1;
   }
 });
-
-// Ensure the avatar-video element exists in the gallery
-window.addEventListener('load', () => {
-  const wrapper = document.getElementById('remote-video-wrapper');
-  if (wrapper && !document.getElementById('avatar-video')) {
-    const avatarVideo = document.createElement('video');
-    avatarVideo.id       = 'avatar-video';
-    avatarVideo.className= 'remote-video';
-    avatarVideo.controls = true;
-    avatarVideo.hidden   = true;
-    wrapper.appendChild(avatarVideo);
-  }
-});
-
 
 // ─── helper: record 60 s, upload, then auto-restart ────────────────────────
 let segmentTimer;
