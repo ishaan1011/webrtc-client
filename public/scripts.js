@@ -857,7 +857,7 @@ function setupEventListeners() {
 // Render a given clip index into the sidebar text + avatar video element
 function renderAvatarClip(i) {
   const clip = avatarClips[i];
-  transcriptEl.textContent = clip.snippet;
+  document.getElementById('avatar-transcript').textContent = clip.snippet;
   const rv = document.getElementById('remote-video');
   if (rv) {
     rv.src      = clip.videoUrl;
