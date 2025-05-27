@@ -728,7 +728,7 @@ function setupEventListeners() {
 
       // 1) STT→LLM
       transcriptEl.textContent = '…thinking…';
-      let replyText, json;
+      let replyText, json, userText;
       try {
         const blob = new Blob(avatarChunks, { type: 'audio/webm' });
         const form = new FormData();
@@ -738,6 +738,8 @@ function setupEventListeners() {
         json = await r.json();          // assign to outer json
         console.log('🔊 /bot/reply response:', json);
         replyText = json.reply || json.transcript || '[no reply field]';
+        userText  = json.transcript || '<no transcript returned>';
+        console.log(userText);
       } catch (err) {
         transcriptEl.textContent = '[STT failed]';
         startTalk.disabled = false;
