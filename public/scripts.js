@@ -858,12 +858,14 @@ function setupEventListeners() {
 function renderAvatarClip(i) {
   const clip = avatarClips[i];
   document.getElementById('avatar-transcript').textContent = clip.snippet;
-  const rv = document.getElementById('remote-video');
-  if (rv) {
-    rv.src      = clip.videoUrl;
-    rv.hidden   = false;
-    rv.controls = true;
-    rv.play?.();
+  const av = document.getElementById('avatar-video');
+  if (av) {
+    av.srcObject = null;
+    av.src      = clip.videoUrl;
+    av.load();
+    av.hidden   = false;
+    av.controls = true;
+    av.play();
   }
 }
 
@@ -882,6 +884,18 @@ document.getElementById('avatar-next').addEventListener('click', () => {
     renderAvatarClip(avatarIndex);
     document.getElementById('avatar-prev').disabled = false;
     document.getElementById('avatar-next').disabled = avatarIndex === avatarClips.length - 1;
+  }
+});
+
+window.addEventListener('load', () => {
+  const wrapper = document.getElementById('participants-grid');
+  if (wrapper && !document.getElementById('avatar-video')) {
+    const avatarVideo = document.createElement('video');
+    avatarVideo.id       = 'avatar-video';
+    avatarVideo.classList.add('remote-video','avatar-participant');
+    avatarVideo.controls = true;
+    avatarVideo.hidden   = true;
+    wrapper.appendChild(avatarVideo);
   }
 });
 
