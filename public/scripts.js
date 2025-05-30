@@ -3,7 +3,6 @@
  * Enhanced from original WebRTC implementation
  */
 
-
 // Application state
 const state = {
   userName: '',
