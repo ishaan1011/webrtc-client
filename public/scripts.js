@@ -867,6 +867,7 @@ document.getElementById('avatar-prev').addEventListener('click', () => {
     renderAvatarClip(avatarIndex);
     document.getElementById('avatar-next').disabled = false;
     document.getElementById('avatar-prev').disabled = avatarIndex === 0;
+    socket.emit('avatarNavigate', { index: avatarIndex });
   }
 });
 document.getElementById('avatar-next').addEventListener('click', () => {
@@ -875,6 +876,7 @@ document.getElementById('avatar-next').addEventListener('click', () => {
     renderAvatarClip(avatarIndex);
     document.getElementById('avatar-prev').disabled = false;
     document.getElementById('avatar-next').disabled = avatarIndex === avatarClips.length - 1;
+    socket.emit('avatarNavigate', { index: avatarIndex });
   }
 });
 
@@ -1123,6 +1125,12 @@ function setupSocketListeners() {
     }
   });
 
+  socket.on('avatarNavigate', ({ index }) => {
+    avatarIndex = index;
+    renderAvatarClip(index);
+    document.getElementById('avatar-prev').disabled = index === 0;
+    document.getElementById('avatar-next').disabled = index === avatarClips.length - 1;
+  });
 }
 
 // Update the participants list in the UI
