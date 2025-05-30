@@ -1186,23 +1186,34 @@ function showMessage(message, type = 'system') {
  */
 
 // Fetch ICE server configuration from signaling server
-async function fetchIceConfig() {
-  const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
-  if (!res.ok) throw new Error('Failed to fetch ICE config');
-  const data = await res.json();
-  const iceServers = data.iceServers || [];
+// async function fetchIceConfig() {
+//   const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
+//   if (!res.ok) throw new Error('Failed to fetch ICE config');
+//   const data = await res.json();
+//   const iceServers = data.iceServers || [];
 
-  iceServers.unshift({
+//   iceServers.unshift({
+//     urls: [
+//       'turn:54.210.247.10:3478?transport=udp',
+//       'turn:54.210.247.10:3478?transport=tcp'
+//     ],
+//     username: 'webrtc',
+//     credential: 'webrtc'
+//   });
+//   console.log('🔄 ICE servers including EC2 TURN:', iceServers);
+
+//   return iceServers;
+// }
+
+async function fetchIceConfig() {
+  return [{
     urls: [
       'turn:54.210.247.10:3478?transport=udp',
       'turn:54.210.247.10:3478?transport=tcp'
     ],
     username: 'webrtc',
     credential: 'webrtc'
-  });
-  console.log('🔄 ICE servers including EC2 TURN:', iceServers);
-
-  return iceServers;
+  }];
 }
 
 // Initiate a call to peers in the room
