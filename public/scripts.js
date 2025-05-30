@@ -1453,34 +1453,34 @@ function cleanup() {
 window.onload = function() {
   console.log('Window loaded - setting up essential buttons');
   
-  // Direct handlers for the most important buttons
-  const createRoomBtn = document.getElementById('create-room');
-  const joinRoomBtn = document.getElementById('join-room');
-  const roomIdInput = document.getElementById('room-id-input');
+  // // Direct handlers for the most important buttons
+  // const createRoomBtn = document.getElementById('create-room');
+  // const joinRoomBtn = document.getElementById('join-room');
+  // const roomIdInput = document.getElementById('room-id-input');
   
-  if (createRoomBtn) {
-    console.log('Found create room button, adding direct click handler');
-    createRoomBtn.onclick = function() {
-      console.log('Create room clicked');
-      createRoom();
-    };
-  }
+  // if (createRoomBtn) {
+  //   console.log('Found create room button, adding direct click handler');
+  //   createRoomBtn.onclick = function() {
+  //     console.log('Create room clicked');
+  //     createRoom();
+  //   };
+  // }
   
-  if (joinRoomBtn) {
-    console.log('Found join room button, adding direct click handler');
-    joinRoomBtn.onclick = function() {
-      console.log('Join room clicked');
-      joinRoom();
-    };
-  }
+  // if (joinRoomBtn) {
+  //   console.log('Found join room button, adding direct click handler');
+  //   joinRoomBtn.onclick = function() {
+  //     console.log('Join room clicked');
+  //     joinRoom();
+  //   };
+  // }
   
-  if (roomIdInput) {
-    roomIdInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        joinRoom();
-      }
-    });
-  }
+  // if (roomIdInput) {
+  //   roomIdInput.addEventListener('keypress', function(e) {
+  //     if (e.key === 'Enter') {
+  //       joinRoom();
+  //     }
+  //   });
+  // }
   
   // Start normal initialization
   init();
