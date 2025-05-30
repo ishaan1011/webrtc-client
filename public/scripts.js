@@ -1190,7 +1190,16 @@ function showMessage(message, type = 'system') {
 async function fetchIceConfig() {
   const res = await fetch(`${SIGNALING_SERVER_URL}/ice`);
   if (!res.ok) throw new Error('Failed to fetch ICE config');
-  return (await res.json()).iceServers;
+  const data = await res.json();
+  const iceServers = data.iceServers || [];
+
+  console.log('🔄 fetched ICE servers from server:', iceServers);
+
+  // Add a public STUN fallback for testing connectivity
+  iceServers.push({ urls: 'stun:stun.l.google.com:19302' });
+  console.log('🔄 ICE servers with fallback STUN:', iceServers);
+
+  return iceServers;
 }
 
 // Initiate a call to peers in the room
@@ -1286,27 +1295,30 @@ async function addAnswer(offerObj) {
 async function setupPeerConnection(offerObj = null) {
   // Get ICE servers from signaling server
   const iceServers = await fetchIceConfig();
+  console.log('🔧 Creating RTCPeerConnection with ICE config:', iceServers);
   
   // Create peer connection
   state.peerConnection = new RTCPeerConnection({ iceServers });
+
+  state.peerConnection.addEventListener('icegatheringstatechange', () => {
+    console.log('🟡 ICE gathering state:', state.peerConnection.iceGatheringState);
+    if (state.peerConnection.iceGatheringState === 'complete') {
+      // Once done, inspect final relay candidates
+      state.peerConnection.getStats().then(stats => {
+        const relays = [...stats.values()]
+          .filter(s => s.candidateType === 'relay');
+        console.log('🛡️ Final relay candidates:', relays);
+      });
+    }
+  });
 
   // ── Diagnostics: log candidate types ──────────────────────────────
   state.peerConnection.addEventListener('icecandidate', e => {
     if (e.candidate) {
       console.log('[ICE]', e.candidate.type, e.candidate.candidate);
-    } else {
-      // Gathering finished – did we get at least one relay?
-      state.peerConnection.getStats().then(stats => {
-        const relays = [...stats.values()]
-          .filter(s => s.type === 'remote-candidate' && s.candidateType === 'relay');
-        if (!relays.length) {
-          console.warn('⚠️  No TURN relay candidates gathered!');
-        }
-      });
     }
   });
   // ─────────────────────────────────────────────────────────────────
-
 
   // Prepare remote stream
   state.remoteStream = new MediaStream();
