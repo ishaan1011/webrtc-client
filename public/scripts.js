@@ -238,7 +238,7 @@ function createRoom() {
   
   // Switch to meeting view
   showMeetingView();
-  initiateCall().catch(console.error);
+  // initiateCall().catch(console.error);
 }
 
 // Join an existing room
