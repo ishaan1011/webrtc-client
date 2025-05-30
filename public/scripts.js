@@ -1087,11 +1087,10 @@ function setupSocketListeners() {
     showMessage(message, 'from-other');
   });
 
-  socket.on('avatarOutput', msg => {
-    console.log('🔁 avatarOutput from peer:', msg);
-    // reuse our render logic: parse + build avatarClips + render first clip
+  socket.on('avatarOutput', json => {
     try {
-      const outer = JSON.parse(msg.reply || msg.rawReply || '[]');
+      // parse exactly like your local code
+      const outer = JSON.parse(json.reply || json.rawReply || '[]');
       const entries = Array.isArray(outer) && Array.isArray(outer[0]) ? outer[0] : [];
       avatarClips = entries.map(e => ({
         snippet:  e.snippet,
@@ -1100,11 +1099,30 @@ function setupSocketListeners() {
                   `#t=${e.videodetails.snippetstarttimesecs},${e.videodetails.snippetendtimesecs}`
       }));
       avatarIndex = 0;
+
+      // inject the UI slot if this is the first time
+      const grid = document.getElementById('participants-grid');
+      if (grid && !document.getElementById('avatar-container')) {
+        grid.classList.add('three-participants');
+        const avatarSlot = document.createElement('div');
+        avatarSlot.id = 'avatar-container';
+        avatarSlot.className = 'video-wrapper';
+        avatarSlot.innerHTML = `
+          <div class="video-placeholder" id="avatar-placeholder">
+            <i class="fas fa-robot fa-2x"></i><p>Your Avatar</p>
+          </div>
+          <video id="avatar-video" autoplay playsinline hidden></video>
+          <div class="video-overlay"><div class="participant-name">Avatar</div></div>`;
+        grid.appendChild(avatarSlot);
+      }
+
+      // finally, render the first clip
       renderAvatarClip(0);
     } catch (err) {
-      console.warn('Failed to render peer AvatarOutput', err);
+      console.error('Failed to render remote avatar output', err);
     }
   });
+
 }
 
 // Update the participants list in the UI
