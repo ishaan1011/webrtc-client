@@ -883,11 +883,17 @@ function renderAvatarClip(i) {
     av.load();
     av.hidden   = false;
     av.controls = true;
-    av.play();
+    av.play().catch(err => {
+      if (err.name !== 'AbortError') {
+        console.error('Avatar video playback failed:', err);
+      }
+  });
   }
 }
 
 // Prev/Next button wiring
+const prevBtn = document.getElementById('avatar-prev');
+prevBtn.replaceWith(prevBtn.cloneNode(true));
 document.getElementById('avatar-prev').addEventListener('click', () => {
   if (avatarIndex > 0) {
     avatarIndex--;
@@ -897,6 +903,8 @@ document.getElementById('avatar-prev').addEventListener('click', () => {
     socket.emit('avatarNavigate', { index: avatarIndex });
   }
 });
+const nextBtn = document.getElementById('avatar-next');
+nextBtn.replaceWith(nextBtn.cloneNode(true));
 document.getElementById('avatar-next').addEventListener('click', () => {
   if (avatarIndex < avatarClips.length - 1) {
     avatarIndex++;
