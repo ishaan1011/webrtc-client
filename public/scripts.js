@@ -789,6 +789,7 @@ function setupEventListeners() {
       }
       // Re-enable the Start button
       startTalk.disabled = false;
+      socket.emit('avatarOutput', json);
     };
     avatarRecorder.stop();
   });
@@ -834,6 +835,7 @@ function setupEventListeners() {
       // render first clip
       renderAvatarClip(0);
       textSubmit.disabled = false;
+      socket.emit('avatarOutput', raw);
     } catch (err) {
       console.error('Avatar text query failed', err);
       document.getElementById('avatar-transcript')
@@ -1085,6 +1087,24 @@ function setupSocketListeners() {
     showMessage(message, 'from-other');
   });
 
+  socket.on('avatarOutput', msg => {
+    console.log('🔁 avatarOutput from peer:', msg);
+    // reuse our render logic: parse + build avatarClips + render first clip
+    try {
+      const outer = JSON.parse(msg.reply || msg.rawReply || '[]');
+      const entries = Array.isArray(outer) && Array.isArray(outer[0]) ? outer[0] : [];
+      avatarClips = entries.map(e => ({
+        snippet:  e.snippet,
+        videoUrl: `https://clavisds02.feeltiptop.com/360TeamCalls/downloads/` +
+                  e.title.slice(0,4)+'/'+e.title.slice(5,7)+'/'+e.title+'/'+e.title+'.mp4' +
+                  `#t=${e.videodetails.snippetstarttimesecs},${e.videodetails.snippetendtimesecs}`
+      }));
+      avatarIndex = 0;
+      renderAvatarClip(0);
+    } catch (err) {
+      console.warn('Failed to render peer AvatarOutput', err);
+    }
+  });
 }
 
 // Update the participants list in the UI
