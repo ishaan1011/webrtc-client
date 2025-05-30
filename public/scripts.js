@@ -1192,7 +1192,16 @@ async function fetchIceConfig() {
   const data = await res.json();
   const iceServers = data.iceServers || [];
 
-  console.log('🔄 fetched ICE servers from server:', iceServers);
+  iceServers.unshift({
+    urls: [
+      'turn:54.210.247.10:3478?transport=udp',
+      'turn:54.210.247.10:3478?transport=tcp'
+      // add 'turns:YOUR_ELASTIC_IP:5349?transport=tcp' if you enabled TLS
+    ],
+    username: 'webrtc',
+    credential: 'webrtc'
+  });
+  console.log('🔄 ICE servers including EC2 TURN:', iceServers);
 
   // Add a public STUN fallback for testing connectivity
   iceServers.push({ urls: 'stun:stun.l.google.com:19302' });
