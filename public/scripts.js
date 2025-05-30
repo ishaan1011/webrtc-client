@@ -843,6 +843,33 @@ function setupEventListeners() {
       textSubmit.disabled = false;
     }
   });
+
+  // ── AVATAR NAVIGATION ─────────────────────────────────────────────────
+  const prevBtn = document.getElementById('avatar-prev');
+  const nextBtn = document.getElementById('avatar-next');
+
+  prevBtn?.addEventListener('click', () => {
+    console.log('👈 avatar-prev clicked');
+    if (avatarIndex > 0) {
+      avatarIndex--;
+      renderAvatarClip(avatarIndex);
+      prevBtn.disabled = avatarIndex === 0;
+      nextBtn.disabled = false;
+      socket.emit('avatarNavigate', { index: avatarIndex });
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    console.log('👉 avatar-next clicked');
+    if (avatarIndex < avatarClips.length - 1) {
+      avatarIndex++;
+      renderAvatarClip(avatarIndex);
+      nextBtn.disabled = avatarIndex === avatarClips.length - 1;
+      prevBtn.disabled = false;
+      socket.emit('avatarNavigate', { index: avatarIndex });
+    }
+  });
+  // ─────────────────────────────────────────────────────────────────────
 }
 
 // Render a given clip index into the sidebar text + avatar video element
@@ -1126,6 +1153,7 @@ function setupSocketListeners() {
   });
 
   socket.on('avatarNavigate', ({ index }) => {
+    console.log('🛰 avatarNavigate received:', index);
     avatarIndex = index;
     renderAvatarClip(index);
     document.getElementById('avatar-prev').disabled = index === 0;
