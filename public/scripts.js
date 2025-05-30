@@ -893,7 +893,8 @@ function renderAvatarClip(i) {
 
 // Prev/Next button wiring
 const prevBtn = document.getElementById('avatar-prev');
-prevBtn.onclick = () => {
+prevBtn.onclick = e => {
+  e.stopImmediatePropagation();
   if (avatarIndex > 0) {
     avatarIndex--;
     renderAvatarClip(avatarIndex);
@@ -903,7 +904,8 @@ prevBtn.onclick = () => {
   }
 };
 const nextBtn = document.getElementById('avatar-next');;
-nextBtn.onclick = () => {
+nextBtn.onclick = e => {
+  e.stopImmediatePropagation();
   if (avatarIndex < avatarClips.length - 1) {
     avatarIndex++;
     renderAvatarClip(avatarIndex);
