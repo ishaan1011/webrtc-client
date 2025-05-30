@@ -1196,16 +1196,11 @@ async function fetchIceConfig() {
     urls: [
       'turn:54.210.247.10:3478?transport=udp',
       'turn:54.210.247.10:3478?transport=tcp'
-      // add 'turns:YOUR_ELASTIC_IP:5349?transport=tcp' if you enabled TLS
     ],
     username: 'webrtc',
     credential: 'webrtc'
   });
   console.log('🔄 ICE servers including EC2 TURN:', iceServers);
-
-  // Add a public STUN fallback for testing connectivity
-  iceServers.push({ urls: 'stun:stun.l.google.com:19302' });
-  console.log('🔄 ICE servers with fallback STUN:', iceServers);
 
   return iceServers;
 }
@@ -1306,7 +1301,30 @@ async function setupPeerConnection(offerObj = null) {
   console.log('🔧 Creating RTCPeerConnection with ICE config:', iceServers);
   
   // Create peer connection
-  state.peerConnection = new RTCPeerConnection({ iceServers });
+  state.peerConnection = new RTCPeerConnection({
+    iceServers,
+    iceTransportPolicy: "relay"   // ← force relay (TURN) only
+  });
+
+  // ── DEBUG: watch ICE‐connection & overall connection states ───────────
+  state.peerConnection.addEventListener('iceconnectionstatechange', () => {
+    console.log('❄️ ICE connection state:', state.peerConnection.iceConnectionState);
+  });
+
+  state.peerConnection.addEventListener('connectionstatechange', () => {
+    console.log('🔗 Peer connection state:', state.peerConnection.connectionState);
+    if (state.peerConnection.connectionState === 'failed') {
+      // if we hit "failed", dump any succeeded candidate‐pairs for post‐mortem
+      state.peerConnection.getStats().then(stats => {
+        stats.forEach(report => {
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            console.log('👉 Successful candidate-pair:', report);
+          }
+        });
+      });
+    }
+  });
+  // ───────────────────────────────────────────────────────────────────────
 
   state.peerConnection.addEventListener('icegatheringstatechange', () => {
     console.log('🟡 ICE gathering state:', state.peerConnection.iceGatheringState);
