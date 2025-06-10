@@ -93,7 +93,14 @@ function getDOMElements() {
     videoInputSelect: document.getElementById('video-input-select'),
     settingsVideoPreview: document.getElementById('settings-video-preview'),
     applySettingsBtn: document.getElementById('apply-settings'),
-    themeSelect: document.getElementById('meeting-theme-select')
+    themeSelect: document.getElementById('meeting-theme-select'),
+
+    // Sidebar: workspaces & threads
+    workspaceList:      document.getElementById('workspace-list'),
+    threadSection:      document.getElementById('thread-section'),
+    threadList:         document.getElementById('thread-list'),
+    createWorkspaceBtn: document.getElementById('create-workspace-btn'),
+    createThreadBtn:    document.getElementById('create-thread-btn'),
   };
 }
 
@@ -111,8 +118,99 @@ if (!SIGNALING_SERVER_URL) {
   console.error('SIGNALING_SERVER_URL is not defined.');
 }
 
+// ─── Helpers for REST calls ─────────────────────────────────────────────────
+async function apiGet(path) {
+  const res = await fetch(`${window.SIGNALING_SERVER_URL}${path}`);
+  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(`${window.SIGNALING_SERVER_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
+  return res.json();
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Socket.io initialization - will connect after room is selected
 let socket = null;
+
+// Helper: create a chat-message DOM node
+function renderChatMessage(msg, type) {
+  const div = document.createElement('div');
+  div.classList.add('chat-message', type); 
+  div.innerHTML = `
+    <div class="message-content">${msg.content}</div>
+    <div class="message-meta">
+      <span class="sender">${type==='from-me' ? 'You' : msg.sender}</span>
+      &bull;
+      <span class="time">${new Date(msg.createdAt).toLocaleTimeString()}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**
+ * Initialize chat for a given thread:
+ *  - loads last 20 messages into #chat-history
+ *  - joins the Socket.IO room and
+ *  - wires receiveMessage → #chat-live (and unread badge)
+ */
+async function initChatForThread(workspaceId, threadId, threadName) {
+  const historyEl = document.getElementById('chat-history');
+  const liveEl    = document.getElementById('chat-live');
+  const histBtn   = document.getElementById('history-tab-btn');
+  const liveBtn   = document.getElementById('live-tab-btn');
+  const badgeEl   = document.getElementById('unread-messages');
+
+  // 1) Clear previous
+  historyEl.innerHTML = '';
+  liveEl.innerHTML    = '';
+  badgeEl.textContent = '0';
+  badgeEl.classList.add('d-none');
+
+  // 2) Load history
+  try {
+    const { messages } = await apiGet(`/api/threads/${threadId}/messages?limit=20`);
+    // messages come newest-first → reverse to oldest-first
+    messages.reverse().forEach(m => {
+      const type = m.sender === state.userName ? 'from-me' : 'from-other';
+      historyEl.appendChild(renderChatMessage(m, type));
+    });
+  } catch (err) {
+    console.error('Failed to load history', err);
+    historyEl.innerHTML = '<p class="text-danger">Could not load chat history.</p>';
+  }
+
+  // 3) Join thread room
+  socket.emit('joinThread', { workspaceId, threadId, userName: state.userName });
+
+  // 4) Wire incoming messages
+  //    Remove any old listener first
+  socket.off('receiveMessage');
+  socket.on('receiveMessage', m => {
+    const type = m.sender === state.userName ? 'from-me' : 'from-other';
+
+    if (liveBtn.classList.contains('active-tab')) {
+      // Live tab open → append directly
+      liveEl.appendChild(renderChatMessage(m, type));
+      liveEl.scrollTop = liveEl.scrollHeight;
+    } else {
+      // History tab open → bump unread badge
+      const count = parseInt(badgeEl.textContent)||0;
+      badgeEl.textContent = count + 1;
+      badgeEl.classList.remove('d-none');
+    }
+  });
+
+  // 5) Optionally switch to Live by default
+  liveBtn.click();
+}
+
 
 /**
  * Room Management Functions
@@ -132,6 +230,87 @@ async function init() {
     } else {
       console.error('Create room button NOT found in DOM');
     }
+
+    const {
+      workspaceList,
+      threadSection,
+      threadList,
+      // createWorkspaceBtn,
+      createWorkspaceBtn: newWsBtn,
+      createThreadBtn:    newThBtn
+      // createThreadBtn
+    } = elements;
+
+    // for convenience, we’ll alias them locally:
+    const wsListEl      = workspaceList;
+    const thSectionEl   = threadSection;
+    const thListEl      = threadList;
+    let selectedWorkspace = null;
+
+    // 1. Load & render workspaces
+    async function loadWorkspaces() {
+      const workspaces = await apiGet('/api/workspaces');
+      wsListEl.innerHTML = '';
+      workspaces.forEach(ws => {
+        const li = document.createElement('li');
+        li.textContent = ws.name;
+        li.dataset.workspaceId = ws._id;
+        li.addEventListener('click', () => selectWorkspace(ws._id, li));
+        wsListEl.appendChild(li);
+      });
+    }
+
+    // 2. Select a workspace → show threads
+    async function selectWorkspace(workspaceId, liEl) {
+      // highlight
+      wsListEl.querySelectorAll('li').forEach(i => i.classList.remove('active-item'));
+      liEl.classList.add('active-item');
+      selectedWorkspace = workspaceId;
+      threadSection.classList.remove('d-none');
+
+      // fetch & render threads
+      const threads = await apiGet(`/api/workspaces/${workspaceId}/threads`);
+      thListEl.innerHTML = '';
+      threads.forEach(th => {
+        const tli = document.createElement('li');
+        tli.textContent = th.name;
+        tli.dataset.threadId = th._id;
+        tli.addEventListener('click', () => {
+          // highlight
+          thListEl.querySelectorAll('li').forEach(i => i.classList.remove('active-item'));
+          tli.classList.add('active-item');
+          initChatForThread(selectedWorkspace, th._id, th.name);
+          joinRoom(th._id);
+        });
+        thListEl.appendChild(tli);
+      });
+    }
+
+    // 3. “New Workspace” button
+    newWsBtn.addEventListener('click', async () => {
+      const name = prompt('Workspace name?');
+      if (!name) return;
+      await apiPost('/api/workspaces', { name, createdBy: state.userName });
+      await loadWorkspaces();
+    });
+
+    // 4. “New Thread” button
+    newThBtn.addEventListener('click', async () => {
+      if (!selectedWorkspace) return alert('Select a workspace first');
+      const name = prompt('Thread name?');
+      if (!name) return;
+      await apiPost(`/api/workspaces/${selectedWorkspace}/threads`, {
+        name,
+        createdBy: state.userName
+      });
+      // re-select to reload threads
+      const activeLi = wsListEl.querySelector('li.active-item');
+      await selectWorkspace(selectedWorkspace, activeLi);
+    });
+
+    // finally, initial load
+    await loadWorkspaces();
+
     
     // Setup event listeners for UI elements
     setupEventListeners();
@@ -870,6 +1049,35 @@ function setupEventListeners() {
     }
   });
   // ─────────────────────────────────────────────────────────────────────
+
+
+  // Tab switching between History & Live
+  const histBtn     = document.getElementById('history-tab-btn');
+  const liveBtn     = document.getElementById('live-tab-btn');
+  const histContainer = document.getElementById('chat-history');
+  const liveContainer = document.getElementById('chat-live');
+  const unreadBadge   = document.getElementById('unread-messages'); // if you use this
+
+  histBtn.addEventListener('click', () => {
+    histBtn.classList.add('active-tab');
+    liveBtn.classList.remove('active-tab');
+    histContainer.classList.remove('d-none');
+    liveContainer.classList.add('d-none');
+
+    // Clear unread badge if you have one
+    if (unreadBadge) {
+      unreadBadge.textContent = '0';
+      unreadBadge.classList.add('d-none');
+    }
+  });
+
+  liveBtn.addEventListener('click', () => {
+    liveBtn.classList.add('active-tab');
+    histBtn.classList.remove('active-tab');
+    liveContainer.classList.remove('d-none');
+    histContainer.classList.add('d-none');
+  });
+
 }
 
 // Render a given clip index into the sidebar text + avatar video element
@@ -890,30 +1098,6 @@ function renderAvatarClip(i) {
   });
   }
 }
-
-// // Prev/Next button wiring
-// const prevBtn = document.getElementById('avatar-prev');
-// prevBtn.onclick = e => {
-//   e.stopImmediatePropagation();
-//   if (avatarIndex > 0) {
-//     avatarIndex--;
-//     renderAvatarClip(avatarIndex);
-//     document.getElementById('avatar-next').disabled = false;
-//     document.getElementById('avatar-prev').disabled = avatarIndex === 0;
-//     socket.emit('avatarNavigate', { index: avatarIndex });
-//   }
-// };
-// const nextBtn = document.getElementById('avatar-next');;
-// nextBtn.onclick = e => {
-//   e.stopImmediatePropagation();
-//   if (avatarIndex < avatarClips.length - 1) {
-//     avatarIndex++;
-//     renderAvatarClip(avatarIndex);
-//     document.getElementById('avatar-prev').disabled = false;
-//     document.getElementById('avatar-next').disabled = avatarIndex === avatarClips.length - 1;
-//     socket.emit('avatarNavigate', { index: avatarIndex });
-//   }
-// };
 
 window.addEventListener('load', () => {
   const wrapper = document.getElementById('participants-grid');

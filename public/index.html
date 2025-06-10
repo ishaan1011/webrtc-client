@@ -26,6 +26,62 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+
+  <!-- ══════════════════ Workspaces & Threads Sidebar ══════════════════ -->
+  <div id="workspace-sidebar" class="sidebar">
+    <h5>Workspaces</h5>
+    <ul id="workspace-list" class="list-unstyled"></ul>
+    <button id="create-workspace-btn" class="btn btn-sm btn-outline-primary mb-3">
+      + New Workspace
+    </button>
+    <hr>
+    <div id="thread-section" class="d-none">
+      <h5>Threads</h5>
+      <ul id="thread-list" class="list-unstyled"></ul>
+      <button id="create-thread-btn" class="btn btn-sm btn-outline-secondary">
+        + New Thread
+      </button>
+    </div>
+  </div>
+
+  <style>
+    /* Sidebar positioning */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    /* Push main container over */
+    #landing-container,
+    #meeting-container {
+      margin-left: 240px;
+    }
+    /* Workspace/Thread list items */
+    #workspace-list li,
+    #thread-list li {
+      padding: 0.4rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #workspace-list li:hover,
+    #thread-list li:hover {
+      background: #e9ecef;
+    }
+    .active-item {
+      background: #dee2e6;
+      font-weight: 600;
+    }
+  </style>
+  <!-- ════════════════════════════════════════════════════════════════════ -->
+
+
   <!-- Landing page container (shown by default) -->
   <div id="landing-container" class="landing-container">
     <div class="landing-content">
@@ -231,12 +287,25 @@
         <h5>In-Meeting Chat</h5>
         <button id="close-chat" class="close-sidebar"><i class="fa-solid fa-times"></i></button>
       </div>
-      <div id="chat-messages" class="chat-messages"></div>
+
+      <!-- Tabs -->
+      <div class="chat-tabs d-flex">
+        <button id="history-tab-btn" class="flex-fill active-tab">History</button>
+        <button id="live-tab-btn"    class="flex-fill">Live</button>
+      </div>
+
+      <!-- History container -->
+      <div id="chat-history" class="chat-messages"></div>
+      <!-- Live container (hidden until tab clicked) -->
+      <div id="chat-live" class="chat-messages d-none"></div>
+
+      <!-- Input stays the same -->
       <div class="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Type message here..." class="chat-input">
-        <button id="send-chat" class="send-chat-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        <input type="text" id="chat-input" class="form-control" placeholder="Type message…">
+        <button id="send-chat" class="btn btn-primary ms-2"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
+
 
     <!-- Participants sidebar (hidden by default) -->
     <div id="participants-sidebar" class="sidebar participants-sidebar">
@@ -299,8 +368,6 @@
 
     <!-- Recordings feed (vertical scroll “reels”) -->
     <div id="recordings-feed" class="recordings-feed"></div>
-  </div>
-
   </div>
   
   <!-- Settings modal -->

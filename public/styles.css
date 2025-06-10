@@ -1512,3 +1512,21 @@ body:not(.light-mode) .input-group .input-group-text {
 .avatar-empty .participant-placeholder {
   opacity: 0.6;
 }
+
+/* ===== Chat tabs styling ===== */
+.chat-tabs button {
+  border: none;
+  background: #f1f1f1;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.chat-tabs button.active-tab {
+  background: #ffffff;
+  border-bottom: 2px solid #0d6efd;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #fafafa;
+}
