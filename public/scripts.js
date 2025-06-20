@@ -3,6 +3,81 @@
  * Enhanced from original WebRTC implementation
  */
 
+
+// ── JWT & Google Auth Integration ─────────────────────────────────────
+const authContainer   = document.getElementById('auth-container');
+const authForm        = document.getElementById('auth-form');
+const authTitle       = document.getElementById('auth-title');
+const authEmail       = document.getElementById('auth-email');
+const authPassword    = document.getElementById('auth-password');
+const authUsername    = document.getElementById('auth-username');
+const authFullName    = document.getElementById('auth-fullName');
+const registerFields  = document.getElementById('register-fields');
+const authSubmit      = document.getElementById('auth-submit');
+const toggleRegister  = document.getElementById('toggle-register');
+let isRegister = false;
+
+// Toggle Login <-> Register
+toggleRegister.addEventListener('click', () => {
+  isRegister = !isRegister;
+  authTitle.textContent = isRegister ? 'Register' : 'Log In';
+  authSubmit.textContent = isRegister ? 'Register' : 'Log In';
+  toggleRegister.textContent = isRegister
+    ? 'Have an account? Log In'
+    : 'Need an account? Register';
+  registerFields.classList.toggle('d-none', !isRegister);
+});
+
+// Handle form submit
+authForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const op = isRegister ? 'register' : 'login';
+  const payload = {
+    email:    authEmail.value,
+    password: authPassword.value,
+    ...(isRegister && {
+      username: authUsername.value,
+      fullName: authFullName.value
+    })
+  };
+  const res = await fetch(`${SIGNALING_SERVER_URL}/api/auth/${op}`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) return alert('Auth failed');
+  const { token } = await res.json();
+  localStorage.setItem('token', token);
+  initApp();
+});
+
+// Google Sign-In
+/* global google */
+google.accounts.id.initialize({
+  client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+  callback: async ({ credential }) => {
+    const res = await fetch(`${SIGNALING_SERVER_URL}/api/auth/google`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ idToken: credential })
+    });
+    const { token } = await res.json();
+    localStorage.setItem('token', token);
+    initApp();
+  }
+});
+google.accounts.id.renderButton(
+  document.getElementById('googleSignIn'),
+  { theme:'outline', size:'large' }
+);
+
+// Once authenticated, hide auth UI and start the app
+function initApp() {
+  authContainer.classList.add('d-none');
+  document.getElementById('landing-container').classList.remove('d-none');
+  init();  // your existing init()
+}
+
 // Application state
 const state = {
   userName: '',
@@ -211,9 +286,8 @@ function initializeSignaling(roomId) {
   socket = io(SIGNALING_SERVER_URL, {
     transports: ['websocket'],
     auth: { 
-      userName: state.userName, 
-      password: 'x',
-      roomId: roomId
+      token: localStorage.getItem('token'),
+      roomId
     }
   });
   
@@ -284,7 +358,11 @@ async function loadRecordings() {
   feed.innerHTML = '';
 
   // 1) Fetch all clips for this room in one go
-  const res = await fetch(`${SIGNALING_SERVER_URL}/api/recordings/${state.roomId}`);
+  const res = await fetch(`${SIGNALING_SERVER_URL}/api/recordings/${state.roomId}`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   if (!res.ok) return;
   const { clips } = await res.json();
   if (!clips.length) return; // nothing to show
@@ -335,7 +413,11 @@ function startMeetingTimer() {
 // Fetch active rooms from the server
 async function fetchActiveRooms() {
   try {
-    const response = await fetch(`${SIGNALING_SERVER_URL}/rooms`);
+    const response = await fetch(`${SIGNALING_SERVER_URL}/rooms`, {
+      headers: { 
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      }
+    });
     if (!response.ok) throw new Error('Failed to fetch rooms');
     
     const data = await response.json();
@@ -732,7 +814,13 @@ function setupEventListeners() {
         const blob = new Blob(avatarChunks, { type: 'audio/webm' });
         const form = new FormData();
         form.append('audio', blob, 'avatar.webm');
-        const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, { method:'POST', body: form });
+        const r = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
+          method:'POST',
+          headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: form
+        });
         // const json = await r.json();
         json = await r.json();          // assign to outer json
         console.log('🔊 /bot/reply response:', json);
@@ -804,7 +892,10 @@ function setupEventListeners() {
       // 1) send text to your Bot API and display raw JSON
       const replyRes = await fetch(`${SIGNALING_SERVER_URL}/bot/reply`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({ text: question })
       });
       const raw = await replyRes.json();
@@ -962,10 +1053,14 @@ function startNextSegment() {
     );
 
     try {
-      const resp = await fetch(
-        `${SIGNALING_SERVER_URL}/api/recordings`,
-        { method: 'POST', body: form, mode: 'cors' }
-      );
+      const resp = await fetch(`${SIGNALING_SERVER_URL}/api/recordings`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: form
+      });
       if (!resp.ok) console.error('❌ chunk upload failed', await resp.text());
       else          console.log(`✅ Chunk #${chunkIndex} uploaded`);
     } catch (err) {
@@ -1580,41 +1675,16 @@ function cleanup() {
   console.log('📞 Call ended');
 }
 
-// Simple direct event listeners for the landing page buttons
 window.onload = function() {
-  console.log('Window loaded - setting up essential buttons');
-  
-  // // Direct handlers for the most important buttons
-  // const createRoomBtn = document.getElementById('create-room');
-  // const joinRoomBtn = document.getElementById('join-room');
-  // const roomIdInput = document.getElementById('room-id-input');
-  
-  // if (createRoomBtn) {
-  //   console.log('Found create room button, adding direct click handler');
-  //   createRoomBtn.onclick = function() {
-  //     console.log('Create room clicked');
-  //     createRoom();
-  //   };
-  // }
-  
-  // if (joinRoomBtn) {
-  //   console.log('Found join room button, adding direct click handler');
-  //   joinRoomBtn.onclick = function() {
-  //     console.log('Join room clicked');
-  //     joinRoom();
-  //   };
-  // }
-  
-  // if (roomIdInput) {
-  //   roomIdInput.addEventListener('keypress', function(e) {
-  //     if (e.key === 'Enter') {
-  //       joinRoom();
-  //     }
-  //   });
-  // }
-  
-  // Start normal initialization
-  init();
+  // If we already have a JWT, skip straight to the app:
+  if (localStorage.getItem('token')) {
+    initApp();
+  } else {
+    // Otherwise, show auth UI and hide landing/meeting
+    authContainer.classList.remove('d-none');
+    document.getElementById('landing-container').classList.add('d-none');
+    document.getElementById('meeting-container').classList.add('d-none');
+  }
 };
 
 // Export functions for possible external use
