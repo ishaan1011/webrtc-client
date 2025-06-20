@@ -1,26 +1,12 @@
-/* in index.html */
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+import React, { useContext } from 'react';
+import { AuthContext } from './context/AuthContext.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import LandingPage from './pages/LandingPage.jsx'; // your meeting UI
 
-// in App.jsx
-import React, { useEffect, useContext } from 'react';
-import { AuthContext } from './context/AuthContext';
-
-export function GoogleSignIn() {
-  const { googleLogin } = useContext(AuthContext);
-
-  useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      callback: ({ credential }) => {
-        googleLogin(credential);            // this calls your /api/auth/google
-      },
-    });
-    google.accounts.id.renderButton(
-      document.getElementById('google-button'),
-      { theme: 'outline', size: 'large' }
-    );
-  }, []);
-
-  return <div id="google-button"></div>;
+export default function App() {
+  const { user } = useContext(AuthContext);
+  // if not logged in, show login/register
+  if (!user) return <LoginPage />;
+  // otherwise show your main app
+  return <LandingPage />;
 }
