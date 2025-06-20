@@ -54,7 +54,7 @@ authForm.addEventListener('submit', async e => {
 // Google Sign-In
 /* global google */
 google.accounts.id.initialize({
-  client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+  client_id: window.GOOGLE_CLIENT_ID,
   callback: async ({ credential }) => {
     const res = await fetch(`${SIGNALING_SERVER_URL}/api/auth/google`, {
       method:'POST',
